@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# WhatsApp session cache & runtime database files
+server/whatsapp-session/
+whatsapp-session/
+
+# Uploaded user files & env variables
+server/uploads/
+uploads/
+.env
+
+# Build outputs & cache
+dist/
+build/
+.DS_Storewsda

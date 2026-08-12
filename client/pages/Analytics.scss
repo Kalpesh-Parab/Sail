@@ -1,0 +1,357 @@
+// client/pages/Analytics.scss
+
+.analytics-container {
+  padding: 2rem;
+
+  .header-bar {
+    margin-bottom: 1.5rem;
+    h2 {
+      margin: 0;
+      font-size: 1.6rem;
+      color: #0f172a;
+    }
+    .subtitle {
+      margin-top: 4px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Top Stat Boxes Grid */
+  .analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+
+    .stat-box {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+      .icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+
+        &.blue {
+          background: #eff6ff;
+          color: #2563eb;
+        }
+        &.green {
+          background: #f0fdf4;
+          color: #16a34a;
+        }
+        &.purple {
+          background: #faf5ff;
+          color: #9333ea;
+        }
+        &.orange {
+          background: #fff7ed;
+          color: #ea580c;
+        }
+      }
+
+      span {
+        font-size: 0.78rem;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      h3 {
+        margin: 2px 0 0 0;
+        font-size: 1.35rem;
+        color: #0f172a;
+      }
+    }
+  }
+
+  /* Tax Breakdown & Revenue Composition Grid */
+  .breakdown-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    @media (max-width: 800px) {
+      grid-template-columns: 1fr;
+    }
+
+    .breakdown-card {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      padding: 1.5rem;
+
+      h3 {
+        margin: 0;
+        font-size: 1.15rem;
+        color: #0f172a;
+      }
+
+      .description {
+        margin: 4px 0 1.5rem 0;
+        font-size: 0.85rem;
+        color: #64748b;
+      }
+
+      .tax-rows {
+        .tax-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 8px 0;
+          font-size: 0.9rem;
+          color: #334155;
+
+          &.total {
+            font-size: 1rem;
+            color: #0f172a;
+            font-weight: 700;
+          }
+        }
+
+        hr {
+          margin: 8px 0;
+          border: none;
+          border-top: 1px solid #e2e8f0;
+        }
+      }
+
+      .visual-bar-wrapper {
+        margin-top: 1rem;
+
+        .bar-container {
+          height: 24px;
+          width: 100%;
+          background: #f1f5f9;
+          border-radius: 12px;
+          overflow: hidden;
+          display: flex;
+
+          .bar-segment {
+            height: 100%;
+            transition: width 0.4s ease;
+
+            &.taxable {
+              background: #2563eb;
+            }
+
+            &.tax {
+              background: #16a34a;
+            }
+          }
+        }
+
+        .bar-legend {
+          display: flex;
+          gap: 1.5rem;
+          margin-top: 1.25rem;
+
+          .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #475569;
+
+            .dot {
+              width: 10px;
+              height: 10px;
+              border-radius: 50%;
+
+              &.segment-taxable {
+                background: #2563eb;
+              }
+              &.segment-tax {
+                background: #16a34a;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /* Chartered Accountant (CA) Export Section */
+  .ca-section {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+
+    .ca-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+
+      h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #0f172a;
+      }
+
+      p {
+        margin: 4px 0 0 0;
+        font-size: 0.85rem;
+        color: #64748b;
+      }
+
+      .btn-secondary {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #e2e8f0;
+          color: #0f172a;
+        }
+      }
+    }
+
+    .ca-form-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 1rem;
+      background: #f8fafc;
+      padding: 1.25rem;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 200px;
+
+        label {
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: #475569;
+          margin-bottom: 6px;
+          text-transform: uppercase;
+        }
+
+        input {
+          border: 1px solid #cbd5e1;
+          border-radius: 6px;
+          padding: 8px 12px;
+          font-size: 0.9rem;
+          outline: none;
+          background: #ffffff;
+          transition: border-color 0.2s ease;
+
+          &:focus {
+            border-color: #2563eb;
+          }
+        }
+      }
+
+      .btn-dispatch-wa {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #25d366;
+        color: #ffffff;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        height: 38px;
+        transition: background 0.2s ease;
+
+        &:hover {
+          background: #1ebc57;
+        }
+
+        &:disabled {
+          background: #94a3b8;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    /* CA Full-Width Audit Table */
+    .ca-table-wrapper {
+      overflow-x: auto;
+
+      .ca-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+
+        th,
+        td {
+          padding: 10px 12px;
+          font-size: 0.85rem;
+          border-bottom: 1px solid #f1f5f9;
+        }
+
+        th {
+          background: #f8fafc;
+          color: #475569;
+          font-weight: 600;
+        }
+
+        .code {
+          font-weight: 600;
+          color: #2563eb;
+        }
+
+        .bold {
+          font-weight: 700;
+          color: #0f172a;
+        }
+
+        .pill {
+          padding: 3px 8px;
+          border-radius: 4px;
+          font-size: 0.72rem;
+          font-weight: 700;
+
+          &.paid {
+            background: #dcfce7;
+            color: #15803d;
+          }
+
+          &.unpaid {
+            background: #fee2e2;
+            color: #b91c1c;
+          }
+        }
+
+        .no-data {
+          text-align: center;
+          color: #94a3b8;
+          padding: 2rem;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,173 @@
+@use '../styles/variables' as *;
+
+.navbar {
+  position: fixed;
+  left: $sidebar-width;
+  top: 0;
+  right: 0;
+  height: $navbar-height;
+  background: $surface;
+  border-bottom: 1px solid $border;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  box-shadow: $shadow;
+  z-index: 900;
+}
+
+.left h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.right button {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #f4f4f4;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s;
+
+  svg {
+    font-size: 22px;
+  }
+
+  &:hover {
+    background: $primary;
+    color: white;
+  }
+}
+
+/* Profile Dropdown Styling */
+.profile-container {
+  position: relative;
+
+  .avatar-btn {
+    padding: 0;
+    overflow: hidden;
+
+    .user-avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+  }
+
+  .profile-dropdown {
+    position: absolute;
+    top: 52px;
+    right: 0;
+    width: 260px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow:
+      0 10px 25px -5px rgba(0, 0, 0, 0.1),
+      0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    padding: 16px;
+    z-index: 1000;
+    animation: fadeIn 0.15s ease-in-out;
+
+    .profile-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .large-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .avatar-placeholder {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: $primary;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      .user-details {
+        overflow: hidden;
+
+        h4 {
+          margin: 0;
+          font-size: 0.95rem;
+          font-weight: 600;
+          color: #0f172a;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        p {
+          margin: 2px 0 0 0;
+          font-size: 0.8rem;
+          color: #64748b;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .divider {
+      margin: 14px 0;
+      border: none;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .logout-btn {
+      width: 100%;
+      height: 38px;
+      border-radius: 8px;
+      background: #fef2f2;
+      color: #ef4444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+
+      svg {
+        font-size: 18px;
+      }
+
+      &:hover {
+        background: #dc2626;
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

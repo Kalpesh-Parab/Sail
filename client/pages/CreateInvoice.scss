@@ -1,0 +1,463 @@
+@use "../styles/variables" as *;
+
+
+.invoice-creator-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .header-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: $text;
+    }
+
+    .subtitle {
+      font-size: 0.875rem;
+      color: $text-light;
+    }
+  }
+
+  /* myBillBook Two-Column Card Grid */
+  .billbook-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 20px;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+    }
+
+    .card {
+      background: $surface;
+      border-radius: $radius;
+      padding: 20px;
+      border: 1px solid $border;
+      box-shadow: $shadow;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        h3 {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: $text;
+        }
+
+        .btn-google-sync {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: $primary-light;
+          color: $primary;
+          padding: 8px 12px;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 0.8rem;
+          transition: $transition;
+
+          &:hover {
+            opacity: 0.85;
+          }
+        }
+      }
+
+      h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: $text;
+      }
+    }
+  }
+
+  /* Inputs & Form Groups */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: $text-light;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid $border;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: $text;
+      background: $bg;
+      transition: $transition;
+
+      &:focus {
+        outline: none;
+        border-color: $primary;
+        background: $surface;
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    }
+
+    textarea {
+      resize: vertical;
+    }
+  }
+
+  .form-row {
+    display: flex;
+    gap: 12px;
+
+    .col-6 {
+      flex: 1;
+    }
+  }
+
+  /* Items & Inventory Table */
+  .items-grid-section {
+    background: $surface;
+    border-radius: $radius;
+    padding: 20px;
+    border: 1px solid $border;
+    box-shadow: $shadow;
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: $text;
+      margin-bottom: 16px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th,
+      td {
+        padding: 12px 10px;
+        text-align: left;
+        vertical-align: middle;
+        font-size: 0.875rem;
+      }
+
+      th {
+        background: $bg;
+        color: $text-light;
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        border-bottom: 1px solid $border;
+      }
+
+      td {
+        border-bottom: 1px solid $border;
+
+        input,
+        select {
+          width: 100%;
+          padding: 8px 10px;
+          border: 1px solid $border;
+          border-radius: 6px;
+          font-size: 0.85rem;
+          background: $surface;
+
+          &:focus {
+            outline: none;
+            border-color: $primary;
+          }
+        }
+
+        &.amount-cell {
+          font-weight: 600;
+          color: $text;
+        }
+
+        .stock-badge {
+          display: inline-block;
+          padding: 4px 8px;
+          border-radius: 6px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          background: #d1fae5;
+          color: #065f46;
+
+          &.low-stock {
+            background: #fee2e2;
+            color: #991b1b;
+          }
+        }
+
+        .btn-delete {
+          color: #ef4444;
+          font-size: 1.2rem;
+          padding: 4px 8px;
+          border-radius: 6px;
+          transition: $transition;
+
+          &:hover:not(:disabled) {
+            background: #fee2e2;
+          }
+
+          &:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+
+    .btn-add-item {
+      margin-top: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: $primary;
+      background: $primary-light;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: $transition;
+
+      &:hover {
+        opacity: 0.85;
+      }
+    }
+  }
+
+  /* Calculation Footer & Bank Info */
+  .footer-summary {
+    .notes-card {
+      .bank-info-box {
+        background: $bg;
+        border-radius: 8px;
+        padding: 12px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: $text;
+
+        p strong {
+          color: $text-light;
+        }
+      }
+    }
+
+    .calculations-card {
+      .calc-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 0;
+        font-size: 0.9rem;
+        color: $text-light;
+
+        span:last-child {
+          font-weight: 600;
+          color: $text;
+        }
+
+        &.total-row {
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: $text;
+          padding-top: 10px;
+
+          span:last-child {
+            color: $primary;
+          }
+        }
+
+        &.input-row {
+          input {
+            width: 120px;
+            text-align: right;
+            padding: 6px 10px;
+            border: 1px solid $border;
+            border-radius: 6px;
+            font-size: 0.9rem;
+
+            &:focus {
+              outline: none;
+              border-color: $primary;
+            }
+          }
+        }
+
+        &.balance-row {
+          color: #dc2626;
+          font-weight: 600;
+
+          span:last-child {
+            color: #dc2626;
+          }
+        }
+      }
+
+      hr {
+        border: none;
+        border-top: 1px solid $border;
+        margin: 8px 0;
+      }
+
+      .btn-submit-invoice {
+        width: 100%;
+        background: $primary;
+        color: #ffffff;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-top: 12px;
+        transition: $transition;
+
+        &:hover {
+          opacity: 0.9;
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+      }
+    }
+  }
+}
+
+/* Modal Popup Styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+
+  .modal-content {
+    background: $surface;
+    border-radius: $radius;
+    width: 100%;
+    max-width: 480px;
+    padding: 24px;
+    box-shadow: $shadow;
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+
+      h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: $text;
+      }
+
+      .close-btn {
+        font-size: 1.5rem;
+        color: $text-light;
+        line-height: 1;
+
+        &:hover {
+          color: $text;
+        }
+      }
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid $border;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+
+      &:focus {
+        outline: none;
+        border-color: $primary;
+      }
+    }
+
+    .contacts-list {
+      max-height: 320px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      .contact-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid $border;
+        background: $bg;
+        cursor: pointer;
+        transition: $transition;
+
+        &:hover {
+          border-color: $primary;
+          background: $surface;
+        }
+
+        .contact-info {
+          .contact-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: $text;
+          }
+
+          .contact-mobile {
+            font-size: 0.75rem;
+            color: $text-light;
+          }
+        }
+
+        .btn-select {
+          background: $primary;
+          color: #ffffff;
+          padding: 6px 12px;
+          border-radius: 6px;
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+      }
+
+      .no-data {
+        text-align: center;
+        padding: 20px;
+        color: $text-light;
+        font-size: 0.875rem;
+      }
+    }
+  }
+}

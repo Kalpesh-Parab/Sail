@@ -1,0 +1,46 @@
+.inventory {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 25px;
+}
+
+.top {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+}
+
+.top input {
+  width: 300px;
+
+  height: 40px;
+
+  padding: 0 15px;
+}
+
+table {
+  width: 100%;
+
+  border-collapse: collapse;
+
+  background: white;
+}
+
+thead {
+  background: #2563eb;
+
+  color: white;
+}
+
+th,
+td {
+  padding: 16px;
+
+  text-align: left;
+
+  border-bottom: 1px solid #eee;
+}
