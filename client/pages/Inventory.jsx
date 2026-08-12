@@ -12,7 +12,7 @@ const Inventory = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        `http://localhost:5000/api/inventory?search=${searchQuery}`,
+        `https://sail-3a7j.onrender.com/api/inventory?search=${searchQuery}`,
       );
       if (res.data.success) {
         setItems(res.data.inventory);
@@ -40,7 +40,7 @@ const Inventory = () => {
   // Save new selling price to Database
   const saveSellingPrice = async (id, sellingPrice) => {
     try {
-      await axios.put(`http://localhost:5000/api/inventory/${id}`, {
+      await axios.put(`https://sail-3a7j.onrender.com/api/inventory/${id}`, {
         sellingPrice,
       });
       alert('Selling price updated successfully!');
