@@ -4,7 +4,7 @@ import {
   getInventoryItemById,
   updateInventoryItem,
   deleteInventoryItem,
-} from '../controllers/inventoryController.js';
+} from '../controllers/InventoryController.js';
 
 const router = express.Router();
 
