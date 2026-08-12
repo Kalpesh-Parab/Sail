@@ -1,6 +1,6 @@
-// server/utils/whatsappBot.js
 import pkg from 'whatsapp-web.js';
 import qrcode from 'qrcode';
+import path from 'path';
 
 const { Client, LocalAuth } = pkg;
 
@@ -11,6 +11,7 @@ export const whatsappClient = new Client({
   authStrategy: new LocalAuth({ dataPath: './whatsapp-session' }),
   puppeteer: {
     headless: true,
+    cacheDirectory: path.join(process.cwd(), '.cache', 'puppeteer'),
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
@@ -27,7 +28,6 @@ export const whatsappClient = new Client({
 whatsappClient.on('qr', async (qr) => {
   isWhatsappConnected = false;
   try {
-    // Generate Base64 Data URL to render as <img> on React UI
     latestQrDataUrl = await qrcode.toDataURL(qr);
     console.log('⚡ New WhatsApp QR Code generated!');
   } catch (err) {
@@ -37,7 +37,7 @@ whatsappClient.on('qr', async (qr) => {
 
 whatsappClient.on('ready', () => {
   isWhatsappConnected = true;
-  latestQrDataUrl = null; // Clear QR when connected
+  latestQrDataUrl = null;
   console.log('✅ WhatsApp Web Bot Connected!');
 });
 

@@ -1,6 +1,10 @@
 # Dependencies
 node_modules/
 
+# Puppeteer browser cache
+.cache/
+server/.cache/
+
 # WhatsApp session cache & runtime database files
 server/whatsapp-session/
 whatsapp-session/
@@ -13,4 +17,4 @@ uploads/
 # Build outputs & cache
 dist/
 build/
-.DS_Storewsda
+.DS_Store
