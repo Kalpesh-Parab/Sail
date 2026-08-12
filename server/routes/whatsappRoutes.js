@@ -11,11 +11,17 @@ import {
 const router = express.Router();
 
 router.get('/status', (req, res) => {
+  // 💡 Safeguard check: If Wid exists or progress reached 100%, consider client active
+  const isClientReady =
+    isWhatsappConnected ||
+    syncProgressPercent >= 100 ||
+    Boolean(whatsappClient?.info?.wid);
+
   res.json({
-    connected: isWhatsappConnected,
-    syncing: isWhatsappSyncing,
+    connected: isClientReady,
+    syncing: !isClientReady && isWhatsappSyncing,
     progress: syncProgressPercent,
-    qrCode: latestQrDataUrl,
+    qrCode: isClientReady ? null : latestQrDataUrl,
   });
 });
 

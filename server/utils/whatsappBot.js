@@ -24,11 +24,12 @@ export const whatsappClient = new Client({
       '--no-zygote',
       '--single-process',
       '--disable-gpu',
+      '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
     ],
   },
 });
 
-// 1. QR Code Event (Waiting for Scan)
+// 1. QR Code Event
 whatsappClient.on('qr', async (qr) => {
   isWhatsappConnected = false;
   isWhatsappSyncing = false;
@@ -40,23 +41,29 @@ whatsappClient.on('qr', async (qr) => {
   }
 });
 
-// 2. Authenticated Event (Fires the EXACT second phone scans QR!)
+// 2. Authenticated Event (Phone scanned QR)
 whatsappClient.on('authenticated', () => {
   console.log('🔑 QR Code Scanned! Phone Authenticated successfully.');
-  isWhatsappConnected = false;
   isWhatsappSyncing = true;
-  latestQrDataUrl = null; // 👈 Clears old QR string immediately!
+  latestQrDataUrl = null;
 });
 
-// 3. Loading Screen Event (Tracks chat sync progress on Render)
+// 3. Loading Screen Event (Chat Sync)
 whatsappClient.on('loading_screen', (percent, message) => {
-  isWhatsappSyncing = true;
   syncProgressPercent = percent;
   latestQrDataUrl = null;
   console.log(`⏳ Syncing WhatsApp Chats: ${percent}% - ${message}`);
+
+  // 💡 FIX: When sync hits 100%, immediately mark as connected!
+  if (percent >= 100) {
+    isWhatsappConnected = true;
+    isWhatsappSyncing = false;
+  } else {
+    isWhatsappSyncing = true;
+  }
 });
 
-// 4. Ready Event (Full connection ready for sending messages)
+// 4. Ready Event
 whatsappClient.on('ready', () => {
   isWhatsappConnected = true;
   isWhatsappSyncing = false;
