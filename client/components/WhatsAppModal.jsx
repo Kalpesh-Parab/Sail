@@ -8,28 +8,24 @@ import './WhatsAppModal.scss';
 const WhatsAppModal = ({ isOpen, onClose }) => {
   const [status, setStatus] = useState({
     connected: false,
-    authenticating: false,
+    syncing: false,
+    progress: 0,
     qrCode: null,
   });
-  const [initialLoading, setInitialLoading] = useState(true);
 
-  const checkStatus = async (isManualRefresh = false) => {
-    if (isManualRefresh) setInitialLoading(true);
+  const checkStatus = async () => {
     try {
       const res = await axios.get('/api/whatsapp/status');
       setStatus(res.data);
     } catch (err) {
       console.error('Failed to fetch WhatsApp status:', err);
-    } finally {
-      setInitialLoading(false);
     }
   };
 
   useEffect(() => {
     if (isOpen) {
-      checkStatus(true);
-      // Auto-poll every 2.5 seconds WITHOUT setting initialLoading to true
-      const interval = setInterval(() => checkStatus(false), 2500);
+      checkStatus();
+      const interval = setInterval(checkStatus, 2000); // Poll every 2 seconds
       return () => clearInterval(interval);
     }
   }, [isOpen]);
@@ -38,7 +34,7 @@ const WhatsAppModal = ({ isOpen, onClose }) => {
     if (!window.confirm('Disconnect current WhatsApp session?')) return;
     try {
       await axios.post('/api/whatsapp/logout');
-      checkStatus(true);
+      checkStatus();
     } catch (err) {
       alert('Failed to logout WhatsApp.');
     }
@@ -60,9 +56,7 @@ const WhatsAppModal = ({ isOpen, onClose }) => {
         </div>
 
         <div className='wa-modal-body'>
-          {initialLoading && !status.qrCode && !status.connected ? (
-            <p className='status-text'>Checking Bot Connection...</p>
-          ) : status.connected ? (
+          {status.connected ? (
             <div className='status-box connected'>
               <MdCheckCircle className='check-icon' />
               <h4>WhatsApp Bot is Active!</h4>
@@ -73,14 +67,18 @@ const WhatsAppModal = ({ isOpen, onClose }) => {
                 Disconnect / Pair New Number
               </button>
             </div>
-          ) : status.authenticating ? (
-            <div className='status-box authenticating'>
-              <MdSync className='spin-icon' />
+          ) : status.syncing ? (
+            <div className='status-box syncing'>
+              <MdSync
+                className='spin-icon'
+                style={{ fontSize: '3rem', color: '#2563eb' }}
+              />
               <h4>QR Code Scanned!</h4>
-              <p>
-                Authenticating & syncing WhatsApp Web session with Render...
-                Please wait.
-              </p>
+              <p>Pairing with your smartphone... ({status.progress || 0}%)</p>
+              <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                Please keep this window open while Render completes initial chat
+                sync.
+              </span>
             </div>
           ) : status.qrCode ? (
             <div className='status-box qr-container'>
@@ -104,16 +102,17 @@ const WhatsAppModal = ({ isOpen, onClose }) => {
                 </li>
               </ol>
 
-              <button className='btn-refresh' onClick={() => checkStatus(true)}>
+              <button className='btn-refresh' onClick={checkStatus}>
                 <MdRefresh /> Refresh Status
               </button>
             </div>
           ) : (
             <div className='status-box'>
               <p className='status-text'>
-                Initializing Bot on Render... Please wait a few seconds.
+                Initializing WhatsApp Web on Render... Please wait a few
+                seconds.
               </p>
-              <button className='btn-refresh' onClick={() => checkStatus(true)}>
+              <button className='btn-refresh' onClick={checkStatus}>
                 <MdRefresh /> Check Again
               </button>
             </div>
