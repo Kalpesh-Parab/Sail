@@ -1,8 +1,9 @@
+// server/server.js
 import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import './utils/whatsappBot.js';
+import { initWhatsApp } from './utils/whatsappBot.js'; // 👈 Import initializer
 import purchaseRoutes from './routes/PurchaseRoutes.js';
 import inventoryRoutes from './routes/InventoryRoutes.js';
 import companyProfileRoutes from './routes/companyProfileRoutes.js';
@@ -13,26 +14,27 @@ import { protect } from './middleware/authMiddleware.js';
 
 const app = express();
 
-// 1. GLOBAL MIDDLEWARE MUST COME FIRST
 app.use(cors());
-app.use(express.json()); // 👈 Essential: Parses req.body BEFORE routes execute
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// 2. ROUTES
-app.use('/api/auth', authRoutes); // 👈 Move here (Public)
+app.use('/api/auth', authRoutes);
 app.use('/api/purchases', protect, purchaseRoutes);
 app.use('/api/invoices', protect, invoiceRoutes);
 app.use('/api/inventory', protect, inventoryRoutes);
 app.use('/api/company-profile', protect, companyProfileRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 
-// Connect to MongoDB
+mongoose.set('bufferCommands', false);
+
+// Connect to MongoDB and THEN initialize WhatsApp Bot
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB Connected Successfully'))
+  .then(() => {
+    console.log('MongoDB Connected Successfully');
+    initWhatsApp(); // 👈 Initialized safely here!
+  })
   .catch((err) => console.error('MongoDB Connection Error:', err));
-
-mongoose.set('bufferCommands', false);
 
 app.get('/', (req, res) => {
   res.send('Sai Tyres Backend Running');

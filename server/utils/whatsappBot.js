@@ -1,29 +1,38 @@
 // server/utils/whatsappBot.js
 import pkg from 'whatsapp-web.js';
+import { MongoStore } from 'wwebjs-mongo';
+import mongoose from 'mongoose';
 import qrcode from 'qrcode';
 import path from 'path';
 
-const { Client, LocalAuth } = pkg;
+const { Client, RemoteAuth } = pkg;
 
 export let latestQrDataUrl = null;
 export let isWhatsappConnected = false;
 export let isWhatsappSyncing = false;
 export let syncProgressPercent = 0;
 
+// Initialize MongoStore using your active Mongoose connection
+const store = new MongoStore({ mongoose: mongoose });
+
 export const whatsappClient = new Client({
-  authStrategy: new LocalAuth({ dataPath: './whatsapp-session' }),
+  authStrategy: new RemoteAuth({
+    store: store,
+    backupSyncIntervalMs: 300000, // Syncs session to MongoDB every 5 mins
+  }),
   puppeteer: {
     headless: true,
     cacheDirectory: path.join(process.cwd(), '.cache', 'puppeteer'),
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
+      '--disable-dev-shm-usage', // 👈 Uses /tmp instead of /dev/shm (Prevents RAM crashes on Render)
       '--disable-accelerated-2d-canvas',
       '--no-first-run',
       '--no-zygote',
       '--single-process',
       '--disable-gpu',
+      '--js-flags="--max-old-space-size=256"', // 👈 Caps Chrome V8 RAM to 256MB
       '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
     ],
   },
@@ -41,20 +50,19 @@ whatsappClient.on('qr', async (qr) => {
   }
 });
 
-// 2. Authenticated Event (Phone scanned QR)
+// 2. Authenticated Event
 whatsappClient.on('authenticated', () => {
   console.log('🔑 QR Code Scanned! Phone Authenticated successfully.');
   isWhatsappSyncing = true;
   latestQrDataUrl = null;
 });
 
-// 3. Loading Screen Event (Chat Sync)
+// 3. Loading Screen Event
 whatsappClient.on('loading_screen', (percent, message) => {
   syncProgressPercent = percent;
   latestQrDataUrl = null;
   console.log(`⏳ Syncing WhatsApp Chats: ${percent}% - ${message}`);
 
-  // 💡 FIX: When sync hits 100%, immediately mark as connected!
   if (percent >= 100) {
     isWhatsappConnected = true;
     isWhatsappSyncing = false;
@@ -69,7 +77,7 @@ whatsappClient.on('ready', () => {
   isWhatsappSyncing = false;
   latestQrDataUrl = null;
   syncProgressPercent = 100;
-  console.log('✅ WhatsApp Web Bot Fully Connected & Ready!');
+  console.log('✅ WhatsApp Web Bot Fully Connected & Saved to Mongo!');
 });
 
 // 5. Auth Failure / Disconnected
@@ -88,4 +96,8 @@ whatsappClient.on('disconnected', (reason) => {
   whatsappClient.initialize();
 });
 
-whatsappClient.initialize();
+// Initialize client AFTER MongoDB is connected in server.js
+export const initWhatsApp = () => {
+  console.log('🚀 Initializing WhatsApp Web Client with Mongo RemoteAuth...');
+  whatsappClient.initialize();
+};
