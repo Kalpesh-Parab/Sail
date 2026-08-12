@@ -24,7 +24,7 @@ app.use('/api/purchases', protect, purchaseRoutes);
 app.use('/api/invoices', protect, invoiceRoutes);
 app.use('/api/inventory', protect, inventoryRoutes);
 app.use('/api/company-profile', protect, companyProfileRoutes);
-app.use('/api/whatsapp', protect, whatsappRoutes);
+app.use('/api/whatsapp', whatsappRoutes);
 
 // Connect to MongoDB
 mongoose
