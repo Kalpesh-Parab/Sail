@@ -3,6 +3,7 @@ import express from 'express';
 import {
   whatsappClient,
   isWhatsappConnected,
+  isWhatsappAuthenticating,
   latestQrDataUrl,
 } from '../utils/whatsappBot.js';
 
@@ -12,6 +13,7 @@ const router = express.Router();
 router.get('/status', (req, res) => {
   res.json({
     connected: isWhatsappConnected,
+    authenticating: isWhatsappAuthenticating,
     qrCode: latestQrDataUrl,
   });
 });
@@ -19,8 +21,13 @@ router.get('/status', (req, res) => {
 // Logout / Pair New WhatsApp Number
 router.post('/logout', async (req, res) => {
   try {
-    await whatsappClient.logout();
-    res.json({ success: true, message: 'WhatsApp logged out. Scan new QR code.' });
+    if (whatsappClient) {
+      await whatsappClient.logout();
+    }
+    res.json({
+      success: true,
+      message: 'WhatsApp logged out. Scan new QR code.',
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }

@@ -25,27 +25,62 @@
   display: flex;
   align-items: center;
   gap: 12px;
-}
 
-.right button {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #f4f4f4;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: 0.3s;
+  /* 🟢 WhatsApp Navigation Button Styling */
+  .wa-nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 38px;
+    padding: 0 14px;
+    background: #25d366;
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      transform 0.1s ease;
 
-  svg {
-    font-size: 22px;
+    .wa-icon {
+      font-size: 1.15rem;
+    }
+
+    &:hover {
+      background: #1ebc57;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
   }
 
-  &:hover {
-    background: $primary;
-    color: white;
+  /* 🟢 Circular Icon Action Buttons (Dark Mode, Notifications, Avatar) */
+  .icon-btn,
+  & > button:not(.wa-nav-btn) {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #f4f4f4;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.3s;
+
+    svg {
+      font-size: 22px;
+    }
+
+    &:hover {
+      background: $primary;
+      color: white;
+    }
   }
 }
 
@@ -148,6 +183,7 @@
       font-size: 0.88rem;
       font-weight: 500;
       transition: all 0.2s ease;
+      cursor: pointer;
 
       svg {
         font-size: 18px;
