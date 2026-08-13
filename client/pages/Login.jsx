@@ -29,7 +29,7 @@ const Login = ({ setAuthUser }) => {
 
         // 2. Authenticate with backend
         const res = await axios.post(
-          'https://sail-3a7j.onrender.co/api/auth/google',
+          'https://sail-3a7j.onrender.com/api/auth/google',
           {
             googleId,
             email,
