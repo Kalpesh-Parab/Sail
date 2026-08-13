@@ -5,9 +5,37 @@ import CompanyProfile from '../models/CompanyProfile.js';
 import { sock, isWhatsappConnected } from '../utils/baileysBot.js';
 import { generateInvoicePDF } from '../utils/pdfGenerator.js';
 
-// 1. WhatsApp Free PDF Sender (Using Baileys)
-// server/controllers/invoiceController.js
+/**
+ * 🟢 Helper Function: Calculates the Indian Financial Year (April 1 to March 31)
+ * and sequence number.
+ * - FY 2026-27: Starts at sequence 67 (66 offline invoices + 1).
+ * - FY 2027-28+: Resets sequence back to 1.
+ */
+const getNextInvoiceDetails = async (targetDate) => {
+  const date = targetDate ? new Date(targetDate) : new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth(); // 0 = Jan, 3 = Apr, 11 = Dec
 
+  // Indian FY starts on April 1st (month index 3)
+  const startYear = month >= 3 ? year : year - 1;
+  const endYear = startYear + 1;
+  const invoicePrefix = `${startYear}-${String(endYear).slice(-2)}/`;
+
+  // Count invoices created for this specific Financial Year prefix
+  const countInCurrentFy = await Invoice.countDocuments({ invoicePrefix });
+
+  // Apply offset of 66 for FY 2026-27 so the first invoice starts at #67
+  let sequenceNumber = countInCurrentFy + 1;
+  if (invoicePrefix === '2026-27/') {
+    sequenceNumber += 66;
+  }
+
+  const invoiceNumber = `${invoicePrefix}${sequenceNumber}`;
+
+  return { invoicePrefix, sequenceNumber, invoiceNumber };
+};
+
+// 1. WhatsApp Free PDF Sender (Using Baileys)
 export const sendInvoiceWhatsAppFree = async (req, res) => {
   try {
     if (!sock || !isWhatsappConnected) {
@@ -22,21 +50,25 @@ export const sendInvoiceWhatsAppFree = async (req, res) => {
 
     const invoice = await Invoice.findById(id);
     if (!invoice) {
-      return res.status(404).json({ success: false, message: 'Invoice not found.' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Invoice not found.' });
     }
 
     const targetMobile = overrideMobile || invoice.customer?.mobile;
     if (!targetMobile) {
-      return res.status(400).json({ success: false, message: 'Mobile number is missing.' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'Mobile number is missing.' });
     }
 
-    // 🟢 SANITIZE PHONE NUMBER (Handles leading zeros like '08446257619' properly)
-    let cleanMobile = String(targetMobile).replace(/\D/g, ''); // Strips spaces, +, dashes
+    // Sanitize phone number (strips leading 0s and adds 91 country code)
+    let cleanMobile = String(targetMobile).replace(/\D/g, '');
     if (cleanMobile.startsWith('0')) {
-      cleanMobile = cleanMobile.substring(1); // Strips leading 0 -> '8446257619'
+      cleanMobile = cleanMobile.substring(1);
     }
     if (cleanMobile.length === 10) {
-      cleanMobile = `91${cleanMobile}`; // Adds 91 -> '918446257619'
+      cleanMobile = `91${cleanMobile}`;
     }
 
     const recipientJid = `${cleanMobile}@s.whatsapp.net`;
@@ -55,7 +87,7 @@ export const sendInvoiceWhatsAppFree = async (req, res) => {
       `Status: *${isPaid ? 'PAID ✅' : 'PENDING ⏳'}*\n\n` +
       `Please find your invoice PDF attached below. Thank you for your business!`;
 
-    // 🟢 15-SECOND TIMEOUT PROMISE (Prevents network hangs if number is invalid)
+    // 15-Second Timeout Promise
     const sendPromise = sock.sendMessage(recipientJid, {
       document: pdfBuffer,
       mimetype: 'application/pdf',
@@ -64,7 +96,15 @@ export const sendInvoiceWhatsAppFree = async (req, res) => {
     });
 
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('WhatsApp socket delivery timed out. Check if number is valid.')), 15000)
+      setTimeout(
+        () =>
+          reject(
+            new Error(
+              'WhatsApp socket delivery timed out. Check if number is valid.',
+            ),
+          ),
+        15000,
+      ),
     );
 
     await Promise.race([sendPromise, timeoutPromise]);
@@ -103,7 +143,7 @@ export const getInvoicePdf = async (req, res) => {
   }
 };
 
-// 3. Create Invoice
+// 3. Create Invoice (With Dynamic FY & Offset Logic)
 export const createInvoice = async (req, res) => {
   try {
     const {
@@ -145,10 +185,11 @@ export const createInvoice = async (req, res) => {
       }
     }
 
-    const count = await Invoice.countDocuments();
-    const sequenceNumber = count + 1;
-    const invoicePrefix = '2026-27/';
-    const invoiceNumber = `${invoicePrefix}${sequenceNumber}`;
+    const parsedInvoiceDate = invoiceDate ? new Date(invoiceDate) : new Date();
+
+    // 🟢 DYNAMIC FINANCIAL YEAR & SEQUENCE CALCULATION
+    const { invoicePrefix, sequenceNumber, invoiceNumber } =
+      await getNextInvoiceDetails(parsedInvoiceDate);
 
     const isIntraState = customer.placeOfSupply === 'Maharashtra';
 
@@ -199,7 +240,6 @@ export const createInvoice = async (req, res) => {
     const received = Math.max(0, Number(amountReceived) || 0);
     const balanceAmount = Math.max(0, totalAmount - received);
 
-    const parsedInvoiceDate = invoiceDate ? new Date(invoiceDate) : new Date();
     const dueDate = new Date(parsedInvoiceDate);
     dueDate.setDate(dueDate.getDate() + Number(paymentTerms));
 
