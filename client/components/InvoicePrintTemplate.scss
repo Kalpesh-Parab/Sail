@@ -125,8 +125,8 @@
     th,
     td {
       border: 1px solid #cbd5e1;
-      padding: 6px 8px;
-      font-size: 11px;
+      padding: 8px 8px;
+      font-size: 13px;
       color: #1e293b;
     }
 
@@ -155,13 +155,15 @@
 
       h5 {
         margin: 0 0 4px 0;
-        font-size: 11px;
+        font-size: 15px;
         font-weight: 700;
         color: #0f172a;
         text-transform: uppercase;
       }
 
       .bank-box {
+        font-size: 13px;
+        font-weight: bolder;
         background: #f8fafc;
         padding: 8px 10px;
         border-radius: 6px;
@@ -181,9 +183,10 @@
           list-style: none;
 
           li {
+            font-weight: 600;
             margin-bottom: 2px;
-            color: #64748b;
-            font-size: 10px;
+            color: #2b3138;
+            font-size: 11px;
           }
         }
       }
@@ -224,7 +227,7 @@
   .signature-section {
     display: flex;
     justify-content: space-between;
-    margin-top: 30px;
+    margin-top: 40px;
     padding-top: 10px;
 
     .sign-box {
