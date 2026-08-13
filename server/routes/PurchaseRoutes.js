@@ -9,7 +9,7 @@ import {
   addManualPurchase,
   updatePurchase,
   deletePurchase,
-} from '../controllers/purchaseController.js';
+} from '../controllers/PurchaseController.js';
 
 const router = express.Router();
 
