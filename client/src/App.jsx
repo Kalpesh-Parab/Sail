@@ -41,7 +41,7 @@ function App() {
 
   if (loading) return <div>Loading Application...</div>;
 
-  axios.defaults.baseURL = 'http://localhost:5000';
+  axios.defaults.baseURL = 'https://sail-3a7j.onrender.co';
   return (
     <BrowserRouter>
       {!user ? (

@@ -28,12 +28,15 @@ const Login = ({ setAuthUser }) => {
         const { sub: googleId, email, name, picture } = userInfoRes.data;
 
         // 2. Authenticate with backend
-        const res = await axios.post('http://localhost:5000/api/auth/google', {
-          googleId,
-          email,
-          name,
-          picture,
-        });
+        const res = await axios.post(
+          'https://sail-3a7j.onrender.co/api/auth/google',
+          {
+            googleId,
+            email,
+            name,
+            picture,
+          },
+        );
 
         const { result, token } = res.data;
 
