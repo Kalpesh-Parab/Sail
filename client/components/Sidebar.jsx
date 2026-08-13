@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom';
-
 import {
   MdDashboard,
   MdInventory,
@@ -8,11 +7,12 @@ import {
   MdHistory,
   MdPeople,
   MdAnalytics,
+  MdClose,
 } from 'react-icons/md';
 
 import './Sidebar.scss';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }) => {
   const menu = [
     {
       title: 'Dashboard',
@@ -52,23 +52,42 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className='sidebar'>
-      <div className='logo'>Sai Tyres</div>
+    <>
+      {/* Mobile Backdrop Overlay */}
+      <div
+        className={`sidebar-overlay ${isOpen ? 'show' : ''}`}
+        onClick={onClose}
+        aria-hidden='true'
+      />
 
-      <nav>
-        {menu.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) => (isActive ? 'active' : '')}
+      <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+        <div className='logo'>
+          <span>Shree Sai Tyres</span>
+          <button
+            type='button'
+            className='close-btn'
+            onClick={onClose}
+            aria-label='Close Menu'
           >
-            <span>{item.icon}</span>
+            <MdClose />
+          </button>
+        </div>
 
-            <p>{item.title}</p>
-          </NavLink>
-        ))}
-      </nav>
-    </aside>
+        <nav>
+          {menu.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) => (isActive ? 'active' : '')}
+              onClick={onClose} // Auto-close drawer on navigation on mobile
+            >
+              <span>{item.icon}</span>
+              <p>{item.title}</p>
+            </NavLink>
+          ))}
+        </nav>
+      </aside>
+    </>
   );
 };
 

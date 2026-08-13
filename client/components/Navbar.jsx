@@ -1,22 +1,38 @@
-// client/components/Navbar.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import {
   MdNotificationsNone,
   MdDarkMode,
+  MdLightMode,
   MdAccountCircle,
   MdLogout,
+  MdMenu,
 } from 'react-icons/md';
 import { FaWhatsapp } from 'react-icons/fa';
 
 import WhatsAppModal from './WhatsAppModal';
 import './Navbar.scss';
 
-const Navbar = ({ user, onLogout }) => {
+const Navbar = ({ user, onLogout, toggleSidebar }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isWaModalOpen, setIsWaModalOpen] = useState(false);
+
+  // Dark Mode State with localStorage persistence
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('theme') === 'dark';
+  });
+
   const menuRef = useRef(null);
 
-  // Close profile dropdown if user clicks outside
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [darkMode]);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -30,11 +46,17 @@ const Navbar = ({ user, onLogout }) => {
   return (
     <header className='navbar'>
       <div className='left'>
+        <button
+          type='button'
+          className='mobile-menu-btn'
+          onClick={toggleSidebar}
+        >
+          <MdMenu />
+        </button>
         <h2>Garage Management System</h2>
       </div>
 
       <div className='right'>
-        {/* 🟢 WHATSAPP BOT PAIRING BUTTON */}
         <button
           type='button'
           className='wa-nav-btn'
@@ -42,18 +64,18 @@ const Navbar = ({ user, onLogout }) => {
           title='Connect / View WhatsApp Bot Status'
         >
           <FaWhatsapp className='wa-icon' />
-          <span>WhatsApp Bot</span>
+          <span className='wa-text'>WhatsApp Bot</span>
         </button>
 
-        <button type='button' aria-label='Toggle Dark Mode'>
-          <MdDarkMode />
+        {/* Dark Mode Toggle */}
+        <button
+          type='button'
+          aria-label='Toggle Dark Mode'
+          onClick={() => setDarkMode((prev) => !prev)}
+        >
+          {darkMode ? <MdLightMode /> : <MdDarkMode />}
         </button>
 
-        <button type='button' aria-label='Notifications'>
-          <MdNotificationsNone />
-        </button>
-
-        {/* Profile Container */}
         <div className='profile-container' ref={menuRef}>
           <button
             type='button'
@@ -68,7 +90,6 @@ const Navbar = ({ user, onLogout }) => {
             )}
           </button>
 
-          {/* Profile Dropdown Modal */}
           {showProfileMenu && (
             <div className='profile-dropdown'>
               <div className='profile-info'>
@@ -99,7 +120,6 @@ const Navbar = ({ user, onLogout }) => {
           )}
         </div>
 
-        {/* WhatsApp Bot Status & QR Scanner Modal */}
         <WhatsAppModal
           isOpen={isWaModalOpen}
           onClose={() => setIsWaModalOpen(false)}

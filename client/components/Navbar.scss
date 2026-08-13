@@ -6,75 +6,179 @@
   top: 0;
   right: 0;
   height: $navbar-height;
-  background: $surface;
-  border-bottom: 1px solid $border;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 30px;
-  box-shadow: $shadow;
+  padding: 0 vw(30);
+  box-shadow: var(--shadow);
   z-index: 900;
+  transition:
+    left $transition,
+    background $transition,
+    border-color $transition;
+
+  @media (max-width: 768px) {
+    left: 0;
+    height: 60px;
+    padding: 0 16px;
+  }
+
+  @media (max-width: 480px) {
+    height: 56px;
+    padding: 0 12px;
+  }
 }
 
-.left h2 {
-  font-size: 22px;
-  font-weight: 600;
+.left {
+  display: flex;
+  align-items: center;
+  gap: vw(12);
+
+  @media (max-width: 768px) {
+    gap: 10px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 8px;
+    max-width: 60%;
+  }
+
+  .mobile-menu-btn {
+    display: none;
+    font-size: 24px;
+    color: var(--text);
+
+    @media (max-width: 768px) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 22px;
+    }
+  }
+
+  h2 {
+    font-size: vw(22);
+    font-weight: 600;
+    color: var(--text);
+
+    @media (max-width: 768px) {
+      font-size: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.88rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
 }
 
 .right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: vw(12);
 
-  /* 🟢 WhatsApp Navigation Button Styling */
+  @media (max-width: 768px) {
+    gap: 8px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 6px;
+  }
+
   .wa-nav-btn {
     display: flex;
     align-items: center;
-    gap: 6px;
-    height: 38px;
-    padding: 0 14px;
-    background: #25d366;
+    gap: vw(6);
+    height: vw(38);
+    padding: 0 vw(14);
+    background: $wa-color;
     color: #ffffff;
     border: none;
-    border-radius: 20px;
-    font-size: 0.85rem;
+    border-radius: vw(20);
+    font-size: vw(14);
     font-weight: 600;
     cursor: pointer;
     transition:
       background 0.2s ease,
       transform 0.1s ease;
 
+    @media (max-width: 768px) {
+      height: 36px;
+      padding: 0 10px;
+      border-radius: 18px;
+
+      .wa-text {
+        display: none; // Hide label on mobile to save space
+      }
+    }
+
+    @media (max-width: 480px) {
+      height: 34px;
+      padding: 0 8px;
+    }
+
     .wa-icon {
-      font-size: 1.15rem;
+      font-size: vw(18);
+
+      @media (max-width: 768px) {
+        font-size: 1.2rem;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 1.1rem;
+      }
     }
 
     &:hover {
-      background: #1ebc57;
-      color: #ffffff;
+      background: $wa-hover;
       transform: translateY(-1px);
-    }
-
-    &:active {
-      transform: translateY(0);
     }
   }
 
-  /* 🟢 Circular Icon Action Buttons (Dark Mode, Notifications, Avatar) */
   .icon-btn,
   & > button:not(.wa-nav-btn) {
-    width: 42px;
-    height: 42px;
+    width: vw(42);
+    height: vw(42);
     border-radius: 50%;
-    background: #f4f4f4;
+    background: var(--btn-icon-bg);
+    color: var(--text);
     border: none;
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: 0.3s;
+    transition: $transition;
+
+    @media (max-width: 768px) {
+      width: 36px;
+      height: 36px;
+    }
+
+    @media (max-width: 480px) {
+      width: 34px;
+      height: 34px;
+    }
 
     svg {
-      font-size: 22px;
+      font-size: vw(22);
+
+      @media (max-width: 768px) {
+        font-size: 1.1rem;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 1rem;
+      }
     }
 
     &:hover {
@@ -84,7 +188,6 @@
   }
 }
 
-/* Profile Dropdown Styling */
 .profile-container {
   height: 100%;
   position: relative;
@@ -103,42 +206,68 @@
 
   .profile-dropdown {
     position: absolute;
-    top: 52px;
+    top: vw(52);
     right: 0;
-    width: 260px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    box-shadow:
-      0 10px 25px -5px rgba(0, 0, 0, 0.1),
-      0 8px 10px -6px rgba(0, 0, 0, 0.05);
-    padding: 16px;
+    width: vw(260);
+    background: var(--profile-dropdown-bg);
+    border: 1px solid var(--border);
+    border-radius: vw(12);
+    box-shadow: var(--shadow);
+    padding: vw(16);
     z-index: 1000;
-    animation: fadeIn 0.15s ease-in-out;
+
+    @media (max-width: 768px) {
+      top: 48px;
+      width: 230px;
+      padding: 12px;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 480px) {
+      top: 44px;
+      right: -8px;
+      width: 210px;
+      padding: 10px;
+    }
 
     .profile-info {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: vw(12);
 
-      .large-avatar {
-        width: 34px;
-        height: 34px;
+      @media (max-width: 480px) {
+        gap: 8px;
+      }
+
+      .large-avatar,
+      .avatar-placeholder {
+        width: vw(34);
+        height: vw(34);
         border-radius: 50%;
-        object-fit: cover;
+
+        @media (max-width: 768px) {
+          width: 32px;
+          height: 32px;
+        }
+
+        @media (max-width: 480px) {
+          width: 28px;
+          height: 28px;
+        }
       }
 
       .avatar-placeholder {
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
         background: $primary;
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 600;
-        font-size: 1.1rem;
+        font-size: vw(16);
+
+        @media (max-width: 480px) {
+          font-size: 0.9rem;
+        }
       }
 
       .user-details {
@@ -146,48 +275,75 @@
 
         h4 {
           margin: 0;
-          font-size: 0.95rem;
+          font-size: vw(15);
           font-weight: 600;
-          color: #0f172a;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          color: var(--text);
+
+          @media (max-width: 768px) {
+            font-size: 0.88rem;
+          }
+
+          @media (max-width: 480px) {
+            font-size: 0.82rem;
+          }
         }
 
         p {
-          margin: 2px 0 0 0;
-          font-size: 0.8rem;
-          color: #64748b;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          margin: vw(2) 0 0 0;
+          font-size: vw(13);
+          color: var(--text-light);
+
+          @media (max-width: 768px) {
+            font-size: 0.75rem;
+          }
+
+          @media (max-width: 480px) {
+            font-size: 0.7rem;
+          }
         }
       }
     }
 
     .divider {
-      margin: 14px 0;
+      margin: vw(14) 0;
       border: none;
-      border-top: 1px solid #f1f5f9;
+      border-top: 1px solid var(--divider);
+
+      @media (max-width: 480px) {
+        margin: 10px 0;
+      }
     }
 
     .logout-btn {
       width: 100%;
-      height: 38px;
-      border-radius: 8px;
+      height: vw(38);
+      border-radius: vw(8);
       background: #fef2f2;
       color: #ef4444;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      font-size: 0.88rem;
+      gap: vw(8);
+      font-size: vw(14);
       font-weight: 500;
       transition: all 0.2s ease;
-      cursor: pointer;
+
+      @media (max-width: 768px) {
+        height: 36px;
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 480px) {
+        height: 32px;
+        font-size: 0.8rem;
+      }
 
       svg {
-        font-size: 18px;
+        font-size: vw(18);
+
+        @media (max-width: 480px) {
+          font-size: 16px;
+        }
       }
 
       &:hover {
@@ -195,16 +351,5 @@
         color: #ffffff;
       }
     }
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }

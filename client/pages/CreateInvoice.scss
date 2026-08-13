@@ -1,50 +1,92 @@
-@use "../styles/variables" as *;
-
+@use '../styles/variables' as *;
 
 .invoice-creator-container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: vw(20);
   width: 100%;
-  max-width: 1200px;
+  max-width: vw(1200);
   margin: 0 auto;
+
+  @media (max-width: 768px) {
+    gap: 16px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 12px;
+  }
 
   .header-bar {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: vw(4);
 
     h2 {
-      font-size: 1.5rem;
+      font-size: vw(24);
       font-weight: 700;
-      color: $text;
+      color: var(--text);
+
+      @media (max-width: 768px) {
+        font-size: 1.25rem;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 1.1rem;
+      }
     }
 
     .subtitle {
-      font-size: 0.875rem;
-      color: $text-light;
+      font-size: vw(14);
+      color: var(--text-light);
+
+      @media (max-width: 768px) {
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 0.78rem;
+      }
     }
   }
 
-  /* myBillBook Two-Column Card Grid */
+  /* Two-Column Card Grid */
   .billbook-layout {
     display: grid;
     grid-template-columns: 1.2fr 1fr;
-    gap: 20px;
+    gap: vw(20);
 
     @media (max-width: 900px) {
       grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 480px) {
+      gap: 12px;
     }
 
     .card {
-      background: $surface;
+      background: var(--surface);
       border-radius: $radius;
-      padding: 20px;
-      border: 1px solid $border;
-      box-shadow: $shadow;
+      padding: vw(20);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: vw(16);
+      transition:
+        background $transition,
+        border-color $transition;
+
+      @media (max-width: 768px) {
+        border-radius: 10px;
+        padding: 16px;
+        gap: 12px;
+      }
+
+      @media (max-width: 480px) {
+        padding: 12px;
+        gap: 10px;
+      }
 
       .card-header {
         display: flex;
@@ -52,22 +94,37 @@
         align-items: center;
 
         h3 {
-          font-size: 1.1rem;
+          font-size: vw(18);
           font-weight: 600;
-          color: $text;
+          color: var(--text);
+
+          @media (max-width: 768px) {
+            font-size: 1rem;
+          }
+
+          @media (max-width: 480px) {
+            font-size: 0.9rem;
+          }
         }
 
         .btn-google-sync {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
+          gap: vw(6);
           background: $primary-light;
           color: $primary;
-          padding: 8px 12px;
-          border-radius: 8px;
+          padding: vw(8) vw(12);
+          border-radius: vw(8);
           font-weight: 600;
-          font-size: 0.8rem;
+          font-size: vw(13);
           transition: $transition;
+
+          @media (max-width: 768px) {
+            gap: 4px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+          }
 
           &:hover {
             opacity: 0.85;
@@ -76,9 +133,13 @@
       }
 
       h3 {
-        font-size: 1.1rem;
+        font-size: vw(18);
         font-weight: 600;
-        color: $text;
+        color: var(--text);
+
+        @media (max-width: 768px) {
+          font-size: 1rem;
+        }
       }
     }
   }
@@ -87,32 +148,55 @@
   .form-group {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: vw(6);
+
+    @media (max-width: 768px) {
+      gap: 4px;
+    }
 
     label {
-      font-size: 0.8rem;
+      font-size: vw(13);
       font-weight: 600;
-      color: $text-light;
+      color: var(--text-light);
       text-transform: uppercase;
       letter-spacing: 0.02em;
+
+      @media (max-width: 768px) {
+        font-size: 0.75rem;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 0.7rem;
+      }
     }
 
     input,
     select,
     textarea {
       width: 100%;
-      padding: 10px 14px;
-      border: 1px solid $border;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      color: $text;
-      background: $bg;
+      padding: vw(10) vw(14);
+      border: 1px solid var(--border);
+      border-radius: vw(8);
+      font-size: vw(14);
+      color: var(--text);
+      background: var(--bg);
       transition: $transition;
+
+      @media (max-width: 768px) {
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 480px) {
+        padding: 8px 10px;
+        font-size: 0.8rem;
+      }
 
       &:focus {
         outline: none;
         border-color: $primary;
-        background: $surface;
+        background: var(--surface);
       }
 
       &:disabled {
@@ -128,7 +212,16 @@
 
   .form-row {
     display: flex;
-    gap: 12px;
+    gap: vw(12);
+
+    @media (max-width: 768px) {
+      gap: 8px;
+    }
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+      gap: 8px;
+    }
 
     .col-6 {
       flex: 1;
@@ -137,17 +230,34 @@
 
   /* Items & Inventory Table */
   .items-grid-section {
-    background: $surface;
+    background: var(--surface);
     border-radius: $radius;
-    padding: 20px;
-    border: 1px solid $border;
-    box-shadow: $shadow;
+    padding: vw(20);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    transition:
+      background $transition,
+      border-color $transition;
+
+    @media (max-width: 768px) {
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    @media (max-width: 480px) {
+      padding: 12px;
+    }
 
     h3 {
-      font-size: 1.1rem;
+      font-size: vw(18);
       font-weight: 600;
-      color: $text;
-      margin-bottom: 16px;
+      color: var(--text);
+      margin-bottom: vw(16);
+
+      @media (max-width: 768px) {
+        font-size: 1rem;
+        margin-bottom: 12px;
+      }
     }
 
     .table-wrapper {
@@ -160,32 +270,53 @@
 
       th,
       td {
-        padding: 12px 10px;
+        padding: vw(12) vw(10);
         text-align: left;
         vertical-align: middle;
-        font-size: 0.875rem;
+        font-size: vw(14);
+
+        @media (max-width: 768px) {
+          padding: 8px 6px;
+          font-size: 0.82rem;
+        }
+
+        @media (max-width: 480px) {
+          padding: 6px 4px;
+          font-size: 0.75rem;
+        }
       }
 
       th {
-        background: $bg;
-        color: $text-light;
+        background: var(--bg);
+        color: var(--text-light);
         font-weight: 600;
-        font-size: 0.75rem;
+        font-size: vw(12);
         text-transform: uppercase;
-        border-bottom: 1px solid $border;
+        border-bottom: 1px solid var(--border);
+
+        @media (max-width: 768px) {
+          font-size: 0.72rem;
+        }
       }
 
       td {
-        border-bottom: 1px solid $border;
+        border-bottom: 1px solid var(--border);
 
         input,
         select {
           width: 100%;
-          padding: 8px 10px;
-          border: 1px solid $border;
-          border-radius: 6px;
-          font-size: 0.85rem;
-          background: $surface;
+          padding: vw(8) vw(10);
+          border: 1px solid var(--border);
+          border-radius: vw(6);
+          font-size: vw(13);
+          background: var(--surface);
+          color: var(--text);
+
+          @media (max-width: 768px) {
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+          }
 
           &:focus {
             outline: none;
@@ -195,33 +326,45 @@
 
         &.amount-cell {
           font-weight: 600;
-          color: $text;
+          color: var(--text);
         }
 
         .stock-badge {
           display: inline-block;
-          padding: 4px 8px;
-          border-radius: 6px;
-          font-size: 0.75rem;
+          padding: vw(4) vw(8);
+          border-radius: vw(6);
+          font-size: vw(12);
           font-weight: 600;
-          background: #d1fae5;
-          color: #065f46;
+          background: rgba(16, 185, 129, 0.15);
+          color: #10b981;
+
+          @media (max-width: 768px) {
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            border-radius: 4px;
+          }
 
           &.low-stock {
-            background: #fee2e2;
-            color: #991b1b;
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
           }
         }
 
         .btn-delete {
           color: #ef4444;
-          font-size: 1.2rem;
-          padding: 4px 8px;
-          border-radius: 6px;
+          font-size: vw(19);
+          padding: vw(4) vw(8);
+          border-radius: vw(6);
           transition: $transition;
 
+          @media (max-width: 768px) {
+            font-size: 1.1rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+          }
+
           &:hover:not(:disabled) {
-            background: #fee2e2;
+            background: rgba(239, 68, 68, 0.15);
           }
 
           &:disabled {
@@ -233,17 +376,29 @@
     }
 
     .btn-add-item {
-      margin-top: 16px;
+      margin-top: vw(16);
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: vw(6);
       color: $primary;
       background: $primary-light;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: vw(10) vw(16);
+      border-radius: vw(8);
       font-weight: 600;
-      font-size: 0.875rem;
+      font-size: vw(14);
       transition: $transition;
+
+      @media (max-width: 768px) {
+        margin-top: 12px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.82rem;
+      }
+
+      @media (max-width: 480px) {
+        width: 100%;
+        justify-content: center;
+      }
 
       &:hover {
         opacity: 0.85;
@@ -255,17 +410,24 @@
   .footer-summary {
     .notes-card {
       .bank-info-box {
-        background: $bg;
-        border-radius: 8px;
-        padding: 12px 16px;
+        background: var(--bg);
+        border-radius: vw(8);
+        padding: vw(12) vw(16);
         display: flex;
         flex-direction: column;
-        gap: 6px;
-        font-size: 0.85rem;
-        color: $text;
+        gap: vw(6);
+        font-size: vw(13);
+        color: var(--text);
+
+        @media (max-width: 768px) {
+          border-radius: 6px;
+          padding: 10px 12px;
+          font-size: 0.8rem;
+          gap: 4px;
+        }
 
         p strong {
-          color: $text-light;
+          color: var(--text-light);
         }
       }
     }
@@ -275,20 +437,30 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 6px 0;
-        font-size: 0.9rem;
-        color: $text-light;
+        padding: vw(6) 0;
+        font-size: vw(14);
+        color: var(--text-light);
+
+        @media (max-width: 768px) {
+          padding: 4px 0;
+          font-size: 0.85rem;
+        }
 
         span:last-child {
           font-weight: 600;
-          color: $text;
+          color: var(--text);
         }
 
         &.total-row {
-          font-size: 1.1rem;
+          font-size: vw(18);
           font-weight: 700;
-          color: $text;
-          padding-top: 10px;
+          color: var(--text);
+          padding-top: vw(10);
+
+          @media (max-width: 768px) {
+            font-size: 1.05rem;
+            padding-top: 8px;
+          }
 
           span:last-child {
             color: $primary;
@@ -297,12 +469,21 @@
 
         &.input-row {
           input {
-            width: 120px;
+            width: vw(120);
             text-align: right;
-            padding: 6px 10px;
-            border: 1px solid $border;
-            border-radius: 6px;
-            font-size: 0.9rem;
+            padding: vw(6) vw(10);
+            border: 1px solid var(--border);
+            border-radius: vw(6);
+            font-size: vw(14);
+            background: var(--bg);
+            color: var(--text);
+
+            @media (max-width: 768px) {
+              width: 90px;
+              padding: 4px 8px;
+              border-radius: 4px;
+              font-size: 0.82rem;
+            }
 
             &:focus {
               outline: none;
@@ -312,31 +493,42 @@
         }
 
         &.balance-row {
-          color: #dc2626;
+          color: #ef4444;
           font-weight: 600;
 
           span:last-child {
-            color: #dc2626;
+            color: #ef4444;
           }
         }
       }
 
       hr {
         border: none;
-        border-top: 1px solid $border;
-        margin: 8px 0;
+        border-top: 1px solid var(--border);
+        margin: vw(8) 0;
+
+        @media (max-width: 768px) {
+          margin: 6px 0;
+        }
       }
 
       .btn-submit-invoice {
         width: 100%;
         background: $primary;
         color: #ffffff;
-        padding: 12px;
-        border-radius: 8px;
-        font-size: 1rem;
+        padding: vw(12);
+        border-radius: vw(8);
+        font-size: vw(16);
         font-weight: 600;
-        margin-top: 12px;
+        margin-top: vw(12);
         transition: $transition;
+
+        @media (max-width: 768px) {
+          padding: 10px;
+          border-radius: 6px;
+          font-size: 0.92rem;
+          margin-top: 10px;
+        }
 
         &:hover {
           opacity: 0.9;
@@ -354,51 +546,97 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 999;
+  padding: vw(20);
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px;
+  }
 
   .modal-content {
-    background: $surface;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: $radius;
     width: 100%;
-    max-width: 480px;
-    padding: 24px;
-    box-shadow: $shadow;
+    max-width: vw(480);
+    padding: vw(24);
+    box-shadow: var(--shadow);
+    transition:
+      background $transition,
+      border-color $transition;
+
+    @media (max-width: 768px) {
+      max-width: 420px;
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    @media (max-width: 480px) {
+      max-width: 100%;
+      border-radius: 8px;
+      padding: 14px;
+    }
 
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: vw(16);
+
+      @media (max-width: 768px) {
+        margin-bottom: 12px;
+      }
 
       h3 {
-        font-size: 1.1rem;
+        font-size: vw(18);
         font-weight: 600;
-        color: $text;
+        color: var(--text);
+
+        @media (max-width: 768px) {
+          font-size: 1rem;
+        }
       }
 
       .close-btn {
-        font-size: 1.5rem;
-        color: $text-light;
+        font-size: vw(24);
+        color: var(--text-light);
         line-height: 1;
 
+        @media (max-width: 768px) {
+          font-size: 20px;
+        }
+
         &:hover {
-          color: $text;
+          color: var(--text);
         }
       }
     }
 
     .search-input {
       width: 100%;
-      padding: 10px 14px;
-      border: 1px solid $border;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      font-size: 0.9rem;
+      padding: vw(10) vw(14);
+      border: 1px solid var(--border);
+      border-radius: vw(8);
+      margin-bottom: vw(16);
+      font-size: vw(14);
+      background: var(--bg);
+      color: var(--text);
+
+      @media (max-width: 768px) {
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        font-size: 0.85rem;
+      }
 
       &:focus {
         outline: none;
@@ -407,56 +645,85 @@
     }
 
     .contacts-list {
-      max-height: 320px;
+      max-height: vw(320);
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: vw(8);
+
+      @media (max-width: 768px) {
+        max-height: 260px;
+        gap: 6px;
+      }
 
       .contact-card {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 10px 12px;
-        border-radius: 8px;
-        border: 1px solid $border;
-        background: $bg;
+        padding: vw(10) vw(12);
+        border-radius: vw(8);
+        border: 1px solid var(--border);
+        background: var(--bg);
         cursor: pointer;
         transition: $transition;
 
+        @media (max-width: 768px) {
+          padding: 8px 10px;
+          border-radius: 6px;
+        }
+
         &:hover {
           border-color: $primary;
-          background: $surface;
+          background: var(--surface);
         }
 
         .contact-info {
           .contact-name {
             font-weight: 600;
-            font-size: 0.9rem;
-            color: $text;
+            font-size: vw(14);
+            color: var(--text);
+
+            @media (max-width: 768px) {
+              font-size: 0.85rem;
+            }
           }
 
           .contact-mobile {
-            font-size: 0.75rem;
-            color: $text-light;
+            font-size: vw(12);
+            color: var(--text-light);
+
+            @media (max-width: 768px) {
+              font-size: 0.72rem;
+            }
           }
         }
 
         .btn-select {
           background: $primary;
           color: #ffffff;
-          padding: 6px 12px;
-          border-radius: 6px;
-          font-size: 0.75rem;
+          padding: vw(6) vw(12);
+          border-radius: vw(6);
+          font-size: vw(12);
           font-weight: 600;
+
+          @media (max-width: 768px) {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+          }
         }
       }
 
       .no-data {
         text-align: center;
-        padding: 20px;
-        color: $text-light;
-        font-size: 0.875rem;
+        padding: vw(20);
+        color: var(--text-light);
+        font-size: vw(14);
+
+        @media (max-width: 768px) {
+          padding: 16px;
+          font-size: 0.82rem;
+        }
       }
     }
   }

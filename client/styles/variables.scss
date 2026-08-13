@@ -1,19 +1,43 @@
-$sidebar-width: 270px;
-$navbar-height: 70px;
+// SCSS Helper Function to convert px to vw based on 1980px design width
+@function vw($px) {
+  @return calc(($px / 1980) * 100vw);
+}
 
-$bg: #f6f7fb;
-$surface: #ffffff;
+// Fixed dimensions in VW for desktop
+$sidebar-width: vw(270);
+$navbar-height: vw(70);
 
+// Radius & Transitions
+$radius: vw(14);
+$transition: 0.3s ease;
+
+// Fixed Colors
 $primary: #2563eb;
 $primary-light: #dbeafe;
+$wa-color: #25d366;
+$wa-hover: #1ebc57;
 
-$text: #222;
-$text-light: #777;
+// Dynamic CSS Custom Properties for Light & Dark Themes
+:root {
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --text: #222222;
+  --text-light: #777777;
+  --border: #e5e7eb;
+  --shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  --btn-icon-bg: #f4f4f4;
+  --profile-dropdown-bg: #ffffff;
+  --divider: #f1f5f9;
+}
 
-$border: #e5e7eb;
-
-$shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
-
-$radius: 14px;
-
-$transition: 0.3s ease;
+[data-theme='dark'] {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --text: #f8fafc;
+  --text-light: #94a3b8;
+  --border: #334155;
+  --shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  --btn-icon-bg: #334155;
+  --profile-dropdown-bg: #1e293b;
+  --divider: #334155;
+}

@@ -16,9 +16,13 @@ import Dashboard from '../pages/Dashboard';
 
 import '../styles/global.scss';
 
+// Move API base configuration outside component render
+axios.defaults.baseURL = 'https://sail-3a7j.onrender.com';
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile sidebar drawer state
 
   // Check if user is already logged in on page load
   useEffect(() => {
@@ -37,11 +41,19 @@ function App() {
     localStorage.removeItem('koder_user');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
+    setIsSidebarOpen(false);
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
   };
 
   if (loading) return <div>Loading Application...</div>;
 
-  axios.defaults.baseURL = 'https://sail-3a7j.onrender.com';
   return (
     <BrowserRouter>
       {!user ? (
@@ -52,9 +64,17 @@ function App() {
       ) : (
         // Authenticated Layout
         <div className='app'>
-          <Sidebar />
+          {/* Passed Mobile Controls to Sidebar */}
+          <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+
           <div className='main'>
-            <Navbar user={user} onLogout={handleLogout} />
+            {/* Passed Toggle Handler to Navbar */}
+            <Navbar
+              user={user}
+              onLogout={handleLogout}
+              toggleSidebar={toggleSidebar}
+            />
+
             <div className='content'>
               <Routes>
                 <Route path='/' element={<Dashboard />} />

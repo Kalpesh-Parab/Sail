@@ -1,63 +1,168 @@
-// client/components/DateFilterBar.scss
+@use '../styles/variables' as *;
+
 .date-filter-card {
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
+  background: var(--surface);
+  border-radius: vw(12);
+  border: 1px solid var(--border);
+  padding: vw(16) vw(20);
+  margin-bottom: vw(24);
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: vw(24);
   flex-wrap: wrap;
+  box-shadow: var(--shadow);
+  transition:
+    background $transition,
+    border-color $transition;
+
+  @media (max-width: 768px) {
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    gap: 16px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 12px;
+    margin-bottom: 16px;
+    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
 
   .filter-group {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: vw(12);
+
+    @media (max-width: 768px) {
+      gap: 10px;
+    }
+
+    @media (max-width: 480px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      width: 100%;
+    }
 
     label {
-      font-size: 0.82rem;
+      font-size: vw(13);
       font-weight: 600;
-      color: #64748b;
+      color: var(--text-light);
       text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      @media (max-width: 768px) {
+        font-size: 0.78rem;
+      }
+
+      @media (max-width: 480px) {
+        font-size: 0.72rem;
+      }
     }
 
     .btn-group {
       display: flex;
-      background: #f1f5f9;
-      padding: 3px;
-      border-radius: 8px;
+      background: var(--btn-icon-bg);
+      padding: vw(3);
+      border-radius: vw(8);
+      gap: vw(2);
+
+      @media (max-width: 768px) {
+        padding: 3px;
+        border-radius: 8px;
+        gap: 2px;
+      }
+
+      @media (max-width: 480px) {
+        width: 100%;
+        justify-content: space-between;
+      }
 
       button {
         border: none;
         background: transparent;
-        padding: 6px 12px;
-        font-size: 0.82rem;
+        padding: vw(6) vw(14);
+        font-size: vw(13);
         font-weight: 500;
-        color: #64748b;
-        border-radius: 6px;
+        color: var(--text-light);
+        border-radius: vw(6);
         cursor: pointer;
         transition: all 0.2s ease;
 
+        @media (max-width: 768px) {
+          padding: 6px 10px;
+          font-size: 0.8rem;
+          border-radius: 6px;
+        }
+
+        @media (max-width: 480px) {
+          flex: 1;
+          text-align: center;
+          padding: 6px 4px;
+          font-size: 0.75rem;
+        }
+
         &.active {
-          background: #ffffff;
-          color: #2563eb;
+          background: var(--surface);
+          color: $primary;
           font-weight: 600;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        &:hover:not(.active) {
+          color: var(--text);
         }
       }
     }
 
     &.custom-dates {
-      input {
-        border: 1px solid #cbd5e1;
-        border-radius: 6px;
-        padding: 5px 8px;
-        font-size: 0.85rem;
+      @media (max-width: 480px) {
+        flex-direction: row;
+        align-items: center;
+        width: 100%;
+        justify-content: space-between;
       }
+
+      input {
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        border-radius: vw(6);
+        padding: vw(6) vw(10);
+        font-size: vw(14);
+        outline: none;
+        transition: border-color $transition;
+
+        &:focus {
+          border-color: $primary;
+        }
+
+        @media (max-width: 768px) {
+          border-radius: 6px;
+          padding: 6px 8px;
+          font-size: 0.82rem;
+        }
+
+        @media (max-width: 480px) {
+          width: 42%;
+          padding: 5px 6px;
+          font-size: 0.78rem;
+        }
+      }
+
       span {
-        font-size: 0.82rem;
-        color: #94a3b8;
+        font-size: vw(13);
+        color: var(--text-light);
+
+        @media (max-width: 768px) {
+          font-size: 0.8rem;
+        }
+
+        @media (max-width: 480px) {
+          font-size: 0.75rem;
+        }
       }
     }
   }

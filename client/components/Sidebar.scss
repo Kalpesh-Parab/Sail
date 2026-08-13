@@ -1,92 +1,176 @@
-@use "../styles/variables" as *;
+@use '../styles/variables' as *;
+
+/* Mobile Backdrop Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity $transition;
+
+  @media (max-width: 768px) {
+    display: block;
+
+    &.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+}
 
 .sidebar {
   position: fixed;
-
   left: 0;
   top: 0;
-
   width: $sidebar-width;
-
   height: 100vh;
-
-  background: $surface;
-
-  border-right: 1px solid $border;
-
+  background: var(--surface);
+  border-right: 1px solid var(--border);
   display: flex;
-
   flex-direction: column;
-
-  box-shadow: $shadow;
-
+  box-shadow: var(--shadow);
   z-index: 1000;
+  transition:
+    transform $transition,
+    background $transition;
+
+  @media (max-width: 768px) {
+    width: 260px;
+    transform: translateX(-100%); // Hidden off-screen on mobile by default
+
+    &.open {
+      transform: translateX(0); // Slide-in when open
+    }
+  }
+
+  @media (max-width: 480px) {
+    width: 80vw; // Take 80% width on small screens
+    max-width: 270px;
+  }
 }
 
 .logo {
-  height: 70px;
-
+  height: $navbar-height;
   display: flex;
-
   align-items: center;
-
-  justify-content: center;
-
-  font-size: 24px;
-
+  justify-content: space-between;
+  padding: 0 vw(20);
+  font-size: vw(24);
   font-weight: 700;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
 
-  border-bottom: 1px solid $border;
+  .close-btn {
+    display: none;
+    color: var(--text);
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color $transition;
+
+    &:hover {
+      color: $primary;
+    }
+
+    @media (max-width: 768px) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 768px) {
+    height: 60px;
+    padding: 0 16px;
+    font-size: 1.2rem;
+  }
+
+  @media (max-width: 480px) {
+    height: 56px;
+    padding: 0 14px;
+    font-size: 1.1rem;
+  }
 }
 
 .sidebar nav {
   display: flex;
-
   flex-direction: column;
+  padding: vw(20);
+  gap: vw(8);
 
-  padding: 20px;
+  @media (max-width: 768px) {
+    padding: 16px;
+    gap: 8px;
+  }
 
-  gap: 8px;
-}
+  @media (max-width: 480px) {
+    padding: 12px 10px;
+    gap: 6px;
+  }
 
-.sidebar nav a {
-  display: flex;
+  a {
+    display: flex;
+    align-items: center;
+    gap: vw(15);
+    padding: vw(14) vw(18);
+    border-radius: $radius;
+    transition: $transition;
+    color: var(--text-light);
 
-  align-items: center;
+    @media (max-width: 768px) {
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+    }
 
-  gap: 15px;
+    @media (max-width: 480px) {
+      gap: 10px;
+      padding: 10px 12px;
+    }
 
-  padding: 14px 18px;
+    span {
+      display: flex;
+      align-items: center;
+      font-size: vw(22);
 
-  border-radius: $radius;
+      @media (max-width: 768px) {
+        font-size: 1.2rem;
+      }
 
-  transition: $transition;
+      @media (max-width: 480px) {
+        font-size: 1.1rem;
+      }
+    }
 
-  color: $text-light;
-}
+    p {
+      font-size: vw(15);
+      font-weight: 500;
 
-.sidebar nav a span {
-  display: flex;
+      @media (max-width: 768px) {
+        font-size: 0.9rem;
+      }
 
-  align-items: center;
+      @media (max-width: 480px) {
+        font-size: 0.85rem;
+      }
+    }
 
-  font-size: 22px;
-}
+    &:hover {
+      background: $primary-light;
+      color: $primary;
+    }
 
-.sidebar nav a p {
-  font-size: 15px;
-
-  font-weight: 500;
-}
-
-.sidebar nav a:hover {
-  background: $primary-light;
-
-  color: $primary;
-}
-
-.sidebar nav .active {
-  background: $primary;
-
-  color: white;
+    &.active {
+      background: $primary;
+      color: #ffffff;
+    }
+  }
 }

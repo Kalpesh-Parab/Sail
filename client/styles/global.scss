@@ -12,43 +12,46 @@ html {
 
 body {
   font-family: Inter, sans-serif;
-
-  background: $bg;
-
-  color: $text;
+  background: var(--bg);
+  color: var(--text);
+  transition:
+    background $transition,
+    color $transition;
 }
 
 a {
   text-decoration: none;
-
   color: inherit;
 }
 
 button {
   border: none;
-
   outline: none;
-
   cursor: pointer;
-
   background: none;
 }
 
 .app {
   display: flex;
-
   width: 100%;
-
   min-height: 100vh;
 }
 
 .main {
   flex: 1;
-
   margin-left: $sidebar-width;
+  transition: margin-left $transition;
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+  }
 }
 
 .content {
-  padding: calc(#{$navbar-height} + 25px) 25px 25px;
+  padding: calc(#{$navbar-height} + #{vw(25)}) vw(25) vw(25);
   min-height: 100vh;
+
+  @media (max-width: 768px) {
+    padding: 80px 16px 20px;
+  }
 }
