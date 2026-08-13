@@ -140,14 +140,24 @@ const Purchases = () => {
       }
 
       const formData = new FormData();
-      formData.append('invoice', file);
+      formData.append('invoice', file); // Field name must match upload.single('invoice')
+
       try {
-        const res = await axios.post('/api/purchases/upload', formData);
+        const res = await axios.post('/api/purchases/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
         if (res.data.success) {
+          alert('Invoice parsed successfully via Gemini!');
           fetchPurchases();
         }
       } catch (err) {
-        alert(err.response?.data?.error || 'Upload failed');
+        alert(
+          err.response?.data?.message ||
+            err.response?.data?.error ||
+            'Upload failed',
+        );
       }
     }
     e.target.value = null;
