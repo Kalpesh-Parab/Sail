@@ -8,7 +8,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://sail-3a7j.onrender.com', // Change 5000 to your Express server's port
+        target: 'http://localhost:5000', // Change 5000 to your Express server's port
         changeOrigin: true,
         secure: false,
       },

@@ -1,38 +1,40 @@
 // server/routes/whatsappRoutes.js
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
 import {
-  whatsappClient,
+  sock,
   isWhatsappConnected,
-  isWhatsappSyncing,
-  syncProgressPercent,
   latestQrDataUrl,
-} from '../utils/whatsappBot.js';
+  connectToWhatsApp,
+} from '../utils/baileysBot.js';
 
 const router = express.Router();
 
 router.get('/status', (req, res) => {
-  // 💡 Safeguard check: If Wid exists or progress reached 100%, consider client active
-  const isClientReady =
-    isWhatsappConnected ||
-    syncProgressPercent >= 100 ||
-    Boolean(whatsappClient?.info?.wid);
-
   res.json({
-    connected: isClientReady,
-    syncing: !isClientReady && isWhatsappSyncing,
-    progress: syncProgressPercent,
-    qrCode: isClientReady ? null : latestQrDataUrl,
+    connected: isWhatsappConnected,
+    qrCode: latestQrDataUrl,
   });
 });
 
+// 🟢 ROUTE TO PAIR A NEW WHATSAPP DEVICE
 router.post('/logout', async (req, res) => {
   try {
-    if (whatsappClient) {
-      await whatsappClient.logout();
+    if (sock) {
+      await sock.logout();
     }
-    res.json({ success: true, message: 'WhatsApp logged out.' });
+    const authDir = path.join(process.cwd(), 'baileys_auth_info');
+    if (fs.existsSync(authDir)) {
+      fs.rmSync(authDir, { recursive: true, force: true });
+    }
+    connectToWhatsApp(); // Restart socket for new QR code
+    return res.json({
+      success: true,
+      message: 'Logged out. Ready to pair new device!',
+    });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    return res.status(500).json({ success: false, message: err.message });
   }
 });
 

@@ -1,61 +1,49 @@
 // server/controllers/invoiceController.js
-import pkg from 'whatsapp-web.js';
 import Invoice from '../models/Invoice.js';
 import Inventory from '../models/Inventory.js';
 import CompanyProfile from '../models/CompanyProfile.js';
-import { whatsappClient } from '../utils/whatsappBot.js';
+import { sock, isWhatsappConnected } from '../utils/baileysBot.js';
 import { generateInvoicePDF } from '../utils/pdfGenerator.js';
 
-const { MessageMedia } = pkg;
+// 1. WhatsApp Free PDF Sender (Using Baileys)
+// server/controllers/invoiceController.js
 
-// 1. WhatsApp Free PDF Sender (with LID Resolution, CA Override & Document Sending Fix)
 export const sendInvoiceWhatsAppFree = async (req, res) => {
   try {
+    if (!sock || !isWhatsappConnected) {
+      return res.status(503).json({
+        success: false,
+        message: 'WhatsApp Bot is offline. Please scan the QR code to pair.',
+      });
+    }
+
     const { id } = req.params;
-    const { overrideMobile } = req.body || {}; // Accepts target CA mobile number override
+    const { overrideMobile } = req.body || {};
 
     const invoice = await Invoice.findById(id);
     if (!invoice) {
-      return res
-        .status(404)
-        .json({ success: false, message: 'Invoice not found.' });
+      return res.status(404).json({ success: false, message: 'Invoice not found.' });
     }
 
-    // Determine target mobile number
     const targetMobile = overrideMobile || invoice.customer?.mobile;
     if (!targetMobile) {
-      return res.status(400).json({
-        success: false,
-        message: 'Customer mobile number is missing.',
-      });
+      return res.status(400).json({ success: false, message: 'Mobile number is missing.' });
     }
 
-    // Clean Phone Number (Removes spaces, dashes, +91)
-    let cleanMobile = String(targetMobile).replace(/\D/g, '');
-    if (cleanMobile.length === 10) cleanMobile = `91${cleanMobile}`;
-
-    // Resolve Valid WhatsApp User ID (Prevents "No LID for user" error)
-    const numberDetails = await whatsappClient.getNumberId(cleanMobile);
-    if (!numberDetails) {
-      return res.status(400).json({
-        success: false,
-        message: `Phone number ${cleanMobile} is not registered on WhatsApp.`,
-      });
+    // 🟢 SANITIZE PHONE NUMBER (Handles leading zeros like '08446257619' properly)
+    let cleanMobile = String(targetMobile).replace(/\D/g, ''); // Strips spaces, +, dashes
+    if (cleanMobile.startsWith('0')) {
+      cleanMobile = cleanMobile.substring(1); // Strips leading 0 -> '8446257619'
+    }
+    if (cleanMobile.length === 10) {
+      cleanMobile = `91${cleanMobile}`; // Adds 91 -> '918446257619'
     }
 
-    const chatId = numberDetails._serialized;
+    const recipientJid = `${cleanMobile}@s.whatsapp.net`;
 
     // Generate PDF Buffer
     const companyProfile = await CompanyProfile.findOne();
     const pdfBuffer = await generateInvoicePDF(invoice, companyProfile);
-
-    // Convert Buffer to Media Attachment
-    const fileName = `Invoice_${invoice.sequenceNumber || '1'}.pdf`;
-    const media = new MessageMedia(
-      'application/pdf',
-      pdfBuffer.toString('base64'),
-      fileName,
-    );
 
     const isPaid = Number(invoice.balanceAmount || 0) <= 0;
     const totalVal = Number(invoice.totalAmount || 0).toFixed(2);
@@ -67,33 +55,34 @@ export const sendInvoiceWhatsAppFree = async (req, res) => {
       `Status: *${isPaid ? 'PAID ✅' : 'PENDING ⏳'}*\n\n` +
       `Please find your invoice PDF attached below. Thank you for your business!`;
 
-    // 💡 Explicitly pass `sendMediaAsDocument: true` to fix Puppeteer "t" minified error
-    await whatsappClient.sendMessage(chatId, media, {
-      caption,
-      sendMediaAsDocument: true,
+    // 🟢 15-SECOND TIMEOUT PROMISE (Prevents network hangs if number is invalid)
+    const sendPromise = sock.sendMessage(recipientJid, {
+      document: pdfBuffer,
+      mimetype: 'application/pdf',
+      fileName: `Invoice_${invoice.sequenceNumber || '1'}.pdf`,
+      caption: caption,
     });
+
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('WhatsApp socket delivery timed out. Check if number is valid.')), 15000)
+    );
+
+    await Promise.race([sendPromise, timeoutPromise]);
 
     return res.status(200).json({
       success: true,
-      message: `PDF Invoice #${invoice.invoiceNumber} delivered to ${cleanMobile}!`,
+      message: `PDF Invoice #${invoice.invoiceNumber} delivered to +${cleanMobile}!`,
     });
   } catch (error) {
-    console.error('Free WhatsApp Delivery Error:', error);
-
-    // Sanitize minified Puppeteer/Chromium error messages (e.g. "t" or "[object Object]")
-    let errMsg = error?.message || String(error);
-    if (errMsg === 't' || errMsg === '[object Object]') {
-      errMsg = 'WhatsApp Web media upload failed. Please try sending again.';
-    }
-
+    console.error('Baileys WhatsApp Delivery Error:', error);
     return res.status(500).json({
       success: false,
-      message: errMsg,
+      message: error.message || 'Failed to send WhatsApp invoice.',
     });
   }
 };
 
-// 2. Stream PDF Direct Download / Preview Route
+// 2. Stream PDF Direct Download Route
 export const getInvoicePdf = async (req, res) => {
   try {
     const invoice = await Invoice.findById(req.params.id);
@@ -105,7 +94,7 @@ export const getInvoicePdf = async (req, res) => {
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader(
       'Content-Disposition',
-      `inline; filename=Invoice_${invoice.sequenceNumber || '1'}.pdf`,
+      `inline; filename=Invoice_${invoice.sequenceNumber}.pdf`,
     );
     return res.send(pdfBuffer);
   } catch (error) {
@@ -294,7 +283,6 @@ export const updateInvoice = async (req, res) => {
         .json({ success: false, message: 'Invoice not found' });
     }
 
-    // Revert stock deductions
     for (const oldItem of existingInvoice.items) {
       if (oldItem.inventoryId) {
         await Inventory.findByIdAndUpdate(oldItem.inventoryId, {
@@ -303,7 +291,6 @@ export const updateInvoice = async (req, res) => {
       }
     }
 
-    // Validate new stock
     for (const item of items) {
       const invItem = await Inventory.findById(item.inventoryId);
       if (!invItem) {
@@ -389,7 +376,6 @@ export const updateInvoice = async (req, res) => {
 
     await existingInvoice.save();
 
-    // Deduct new quantities
     for (const item of items) {
       await Inventory.findByIdAndUpdate(item.inventoryId, {
         $inc: { quantity: -item.quantity },

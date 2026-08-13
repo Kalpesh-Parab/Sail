@@ -3,14 +3,17 @@ import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import { initWhatsApp } from './utils/whatsappBot.js'; // 👈 Import initializer
+
+// Import Baileys initializer
+import { connectToWhatsApp } from './utils/baileysBot.js';
+
 import purchaseRoutes from './routes/PurchaseRoutes.js';
 import inventoryRoutes from './routes/InventoryRoutes.js';
 import companyProfileRoutes from './routes/companyProfileRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import invoiceRoutes from './routes/invoiceRoutes.js';
-import whatsappRoutes from './routes/whatsappRoutes.js';
 import { protect } from './middleware/authMiddleware.js';
+import whatsappRoutes from './routes/whatsappRoutes.js';
 
 const app = express();
 
@@ -27,12 +30,12 @@ app.use('/api/whatsapp', whatsappRoutes);
 
 mongoose.set('bufferCommands', false);
 
-// Connect to MongoDB and THEN initialize WhatsApp Bot
+// Connect to MongoDB and start Baileys WebSocket
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log('MongoDB Connected Successfully');
-    initWhatsApp(); // 👈 Initialized safely here!
+    connectToWhatsApp(); // 👈 Start Baileys socket
   })
   .catch((err) => console.error('MongoDB Connection Error:', err));
 

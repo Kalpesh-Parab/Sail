@@ -1,0 +1,7 @@
+{
+  "ignore": [
+    "baileys_auth_info/*",
+    "temp/*",
+    "*.json"
+  ]
+}
