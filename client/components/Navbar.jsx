@@ -6,14 +6,17 @@ import {
   MdAccountCircle,
   MdLogout,
 } from 'react-icons/md';
+import { FaWhatsapp } from 'react-icons/fa';
 
+import WhatsAppModal from './WhatsAppModal';
 import './Navbar.scss';
 
 const Navbar = ({ user, onLogout }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isWaModalOpen, setIsWaModalOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // Close dropdown if user clicks outside
+  // Close profile dropdown if user clicks outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -31,6 +34,17 @@ const Navbar = ({ user, onLogout }) => {
       </div>
 
       <div className='right'>
+        {/* 🟢 WHATSAPP BOT PAIRING BUTTON */}
+        <button
+          type='button'
+          className='wa-nav-btn'
+          onClick={() => setIsWaModalOpen(true)}
+          title='Connect / View WhatsApp Bot Status'
+        >
+          <FaWhatsapp className='wa-icon' />
+          <span>WhatsApp Bot</span>
+        </button>
+
         <button type='button' aria-label='Toggle Dark Mode'>
           <MdDarkMode />
         </button>
@@ -84,6 +98,12 @@ const Navbar = ({ user, onLogout }) => {
             </div>
           )}
         </div>
+
+        {/* WhatsApp Bot Status & QR Scanner Modal */}
+        <WhatsAppModal
+          isOpen={isWaModalOpen}
+          onClose={() => setIsWaModalOpen(false)}
+        />
       </div>
     </header>
   );

@@ -11,6 +11,7 @@ import {
 
 const router = express.Router();
 
+// 🟢 Public Endpoint: React Navbar calls this to display the live QR image
 router.get('/status', (req, res) => {
   res.json({
     connected: isWhatsappConnected,
@@ -18,7 +19,7 @@ router.get('/status', (req, res) => {
   });
 });
 
-// 🟢 ROUTE TO PAIR A NEW WHATSAPP DEVICE
+// 🟢 Protected Endpoint: Disconnect current session to pair a new device
 router.post('/logout', async (req, res) => {
   try {
     if (sock) {
@@ -28,7 +29,7 @@ router.post('/logout', async (req, res) => {
     if (fs.existsSync(authDir)) {
       fs.rmSync(authDir, { recursive: true, force: true });
     }
-    connectToWhatsApp(); // Restart socket for new QR code
+    connectToWhatsApp();
     return res.json({
       success: true,
       message: 'Logged out. Ready to pair new device!',

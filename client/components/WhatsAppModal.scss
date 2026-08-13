@@ -20,7 +20,6 @@
     max-width: 440px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    animation: fadeInModal 0.2s ease-out;
 
     .wa-modal-header {
       display: flex;
@@ -58,7 +57,6 @@
         justify-content: center;
         padding: 4px;
         border-radius: 50%;
-        transition: background 0.2s ease;
 
         &:hover {
           background: rgba(255, 255, 255, 0.15);
@@ -81,7 +79,6 @@
         flex-direction: column;
         align-items: center;
 
-        /* Connected State */
         &.connected {
           padding: 1rem 0;
 
@@ -101,7 +98,6 @@
             font-size: 0.85rem;
             color: #64748b;
             margin-bottom: 1.5rem;
-            line-height: 1.4;
           }
 
           .btn-disconnect {
@@ -113,7 +109,6 @@
             font-size: 0.85rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
 
             &:hover {
               background: #fca5a5;
@@ -122,7 +117,6 @@
           }
         }
 
-        /* QR Code Scanner State */
         &.qr-container {
           .instruction {
             font-size: 0.9rem;
@@ -137,7 +131,6 @@
             border-radius: 10px;
             background: #ffffff;
             margin-bottom: 1rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
             img {
               width: 220px;
@@ -151,7 +144,6 @@
             text-align: left;
             font-size: 0.82rem;
             color: #475569;
-            padding-left: 1.2rem;
             margin: 0 0 1.25rem 0;
             background: #f8fafc;
             padding: 10px 12px 10px 2rem;
@@ -183,7 +175,6 @@
             font-size: 0.85rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
 
             &:hover {
               background: #e2e8f0;
@@ -193,16 +184,5 @@
         }
       }
     }
-  }
-}
-
-@keyframes fadeInModal {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
   }
 }
