@@ -317,7 +317,6 @@ export const generateInvoicePDF = (invoice, companyProfile) => {
         width: 155,
         align: 'right',
       });
-
     doc.end();
   });
 };
