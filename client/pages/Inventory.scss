@@ -245,8 +245,16 @@
         font-size: 0.6rem;
       }
 
-      input, button{
-        font-size: vw(42);
+      input,
+      button {
+
+        @media (max-width: 768px) {
+          font-size: 1rem;
+        }
+
+        @media (max-width: 480px) {
+          font-size: 0.6rem;
+        }
       }
     }
 
