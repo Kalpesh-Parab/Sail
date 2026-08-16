@@ -197,10 +197,10 @@ const InvoiceHistory = () => {
         <table className='history-table'>
           <thead>
             <tr>
-              <th>Invoice No</th>
+              {/* <th>Invoice No</th> */}
               <th>Date</th>
               <th>Customer Name</th>
-              <th>Mobile</th>
+              {/* <th>Mobile</th> */}
               <th>Grand Total</th>
               <th>Received</th>
               <th>Balance</th>
@@ -220,12 +220,12 @@ const InvoiceHistory = () => {
                 const isPaid = inv.balanceAmount <= 0;
                 return (
                   <tr key={inv._id}>
-                    <td className='inv-num'>{inv.invoiceNumber}</td>
+                    {/* <td className='inv-num'>{inv.invoiceNumber}</td> */}
                     <td>
                       {new Date(inv.invoiceDate).toLocaleDateString('en-IN')}
                     </td>
                     <td className='cust-name'>{inv.customer?.name}</td>
-                    <td>{inv.customer?.mobile || '-'}</td>
+                    {/* <td>{inv.customer?.mobile || '-'}</td> */}
                     <td className='amount'>₹{inv.totalAmount?.toFixed(2)}</td>
                     <td className='amount green'>
                       ₹{inv.amountReceived?.toFixed(2)}

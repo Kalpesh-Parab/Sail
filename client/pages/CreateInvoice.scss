@@ -5,7 +5,7 @@
   flex-direction: column;
   gap: vw(20);
   width: 100%;
-  max-width: vw(1200);
+  max-width: vw(1920);
   margin: 0 auto;
 
   @media (max-width: 768px) {
@@ -86,6 +86,7 @@
       @media (max-width: 480px) {
         padding: 12px;
         gap: 10px;
+        width: 100%;
       }
 
       .card-header {
@@ -264,6 +265,14 @@
       overflow-x: auto;
     }
 
+    .desktop-only-table {
+      display: table;
+    }
+
+    .mobile-items-list {
+      display: none;
+    }
+
     .items-table {
       width: 100%;
       border-collapse: collapse;
@@ -337,6 +346,7 @@
           font-weight: 600;
           background: rgba(16, 185, 129, 0.15);
           color: #10b981;
+          white-space: nowrap;
 
           @media (max-width: 768px) {
             padding: 2px 6px;
@@ -356,6 +366,9 @@
           padding: vw(4) vw(8);
           border-radius: vw(6);
           transition: $transition;
+          background: transparent;
+          border: none;
+          cursor: pointer;
 
           @media (max-width: 768px) {
             font-size: 1.1rem;
@@ -375,6 +388,176 @@
       }
     }
 
+    .selling-price-container {
+      display: flex;
+      flex-direction: column;
+      gap: vw(4);
+
+      @media (max-width: 768px) {
+        gap: 4px;
+      }
+    }
+
+    .gst-toggle-label {
+      display: flex;
+      align-items: center;
+      gap: vw(4);
+      font-size: vw(11);
+      color: var(--text-light);
+      cursor: pointer;
+      user-select: none;
+
+      @media (max-width: 768px) {
+        gap: 4px;
+        font-size: 0.72rem;
+      }
+
+      input[type='checkbox'] {
+        width: vw(14);
+        height: vw(14);
+        cursor: pointer;
+        accent-color: $primary;
+        margin: 0;
+
+        @media (max-width: 768px) {
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
+
+    /* 🟢 2-Row Mobile Structure */
+    @media (max-width: 768px) {
+      .desktop-only-table {
+        display: none;
+      }
+
+      .mobile-items-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        .mobile-item-card {
+          background: var(--bg);
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          padding: 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+
+          .item-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+
+          .row-1 {
+            .product-select-group {
+              flex: 1;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              min-width: 0;
+
+              .item-index {
+                font-weight: 700;
+                font-size: 0.85rem;
+                color: var(--text-light);
+              }
+
+              select {
+                flex: 1;
+                min-width: 0;
+                padding: 6px 8px;
+                border-radius: 4px;
+                border: 1px solid var(--border);
+                background: var(--surface);
+                color: var(--text);
+                font-size: 0.82rem;
+              }
+            }
+
+            .stock-badge {
+              display: inline-block;
+              padding: 3px 6px;
+              border-radius: 4px;
+              font-size: 0.7rem;
+              font-weight: 600;
+              background: rgba(16, 185, 129, 0.15);
+              color: #10b981;
+              white-space: nowrap;
+
+              &.low-stock {
+                background: rgba(239, 68, 68, 0.15);
+                color: #ef4444;
+              }
+            }
+
+            .btn-delete {
+              color: #ef4444;
+              font-size: 1.2rem;
+              background: transparent;
+              border: none;
+              cursor: pointer;
+              padding: 2px 6px;
+
+              &:disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+              }
+            }
+          }
+
+          .row-2 {
+            display: grid;
+            grid-template-columns: 75px 1.2fr 1fr;
+            gap: 10px;
+            align-items: flex-end;
+
+            .field-group {
+              display: flex;
+              flex-direction: column;
+              gap: 4px;
+
+              label {
+                font-size: 0.7rem;
+                font-weight: 600;
+                color: var(--text-light);
+                text-transform: uppercase;
+              }
+
+              .price-label-wrapper {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              }
+
+              .mobile-amount-display {
+                padding: 6px 8px;
+                font-size: 0.85rem;
+                font-weight: 700;
+                color: var(--text);
+                display: flex;
+                align-items: center;
+                height: 34px;
+              }
+
+              input,
+              select {
+                padding: 6px 8px;
+                border-radius: 4px;
+                border: 1px solid var(--border);
+                background: var(--surface);
+                color: var(--text);
+                font-size: 0.82rem;
+              }
+            }
+          }
+        }
+      }
+    }
+
     .btn-add-item {
       margin-top: vw(16);
       display: inline-flex;
@@ -387,15 +570,14 @@
       font-weight: 600;
       font-size: vw(14);
       transition: $transition;
+      border: none;
+      cursor: pointer;
 
       @media (max-width: 768px) {
         margin-top: 12px;
         padding: 8px 12px;
         border-radius: 6px;
         font-size: 0.82rem;
-      }
-
-      @media (max-width: 480px) {
         width: 100%;
         justify-content: center;
       }
@@ -521,6 +703,8 @@
         font-size: vw(16);
         font-weight: 600;
         margin-top: vw(12);
+        border: none;
+        cursor: pointer;
         transition: $transition;
 
         @media (max-width: 768px) {
@@ -610,6 +794,9 @@
         font-size: vw(24);
         color: var(--text-light);
         line-height: 1;
+        background: transparent;
+        border: none;
+        cursor: pointer;
 
         @media (max-width: 768px) {
           font-size: 20px;
@@ -705,6 +892,8 @@
           border-radius: vw(6);
           font-size: vw(12);
           font-weight: 600;
+          border: none;
+          cursor: pointer;
 
           @media (max-width: 768px) {
             padding: 4px 8px;

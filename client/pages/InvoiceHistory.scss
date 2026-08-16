@@ -1,6 +1,7 @@
 @use '../styles/variables' as *;
 
 .invoice-history-container {
+  width: 100%;
   padding: vw(32);
 
   @media (max-width: 768px) {
@@ -8,7 +9,8 @@
   }
 
   @media (max-width: 480px) {
-    padding: 16px 12px;
+    width: 100%;
+    padding: 0;
   }
 
   .header-bar {
@@ -71,7 +73,9 @@
       border-radius: vw(12);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
-      transition: background $transition, border-color $transition;
+      transition:
+        background $transition,
+        border-color $transition;
 
       @media (max-width: 768px) {
         padding: 14px;
@@ -255,8 +259,10 @@
         }
 
         @media (max-width: 480px) {
-          padding: 6px 4px;
-          font-size: 0.75rem;
+          width: max-content;
+          text-align: center;
+          padding: 4px 2px;
+          font-size: 0.7rem;
         }
       }
 
@@ -299,6 +305,10 @@
           font-size: 0.7rem;
         }
 
+        @media (max-width: 480px) {
+          padding: 2px 4px;
+          font-size: 0.55rem;
+        }
         &.paid {
           background: rgba(22, 163, 74, 0.15);
           color: #16a34a;
@@ -472,6 +482,12 @@
       gap: 4px;
     }
 
+    @media (max-width: 480px) {
+      flex-direction: column;
+      align-items: flex-start;
+
+    }
+
     .btn-action {
       display: flex;
       align-items: center;
@@ -485,11 +501,17 @@
       color: var(--text);
       transition: all 0.2s ease;
 
+      
+            @media (max-width: 480px) {
+              width: 100%;
+              font-size: 0.2rem;
+            }
       @media (max-width: 768px) {
         padding: 4px 6px;
         font-size: 0.75rem;
         border-radius: 4px;
       }
+
 
       &:hover {
         background: $primary;

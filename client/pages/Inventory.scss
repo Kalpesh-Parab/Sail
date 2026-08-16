@@ -13,7 +13,7 @@
 
   @media (max-width: 480px) {
     gap: 12px;
-    padding: 16px 12px;
+    padding: 0;
   }
 
   .metrics-banner {
@@ -60,7 +60,7 @@
         }
 
         @media (max-width: 480px) {
-          font-size: 0.7rem;
+          font-size: 0.6rem;
         }
       }
 
@@ -241,8 +241,12 @@
       }
 
       @media (max-width: 480px) {
-        padding: 8px 6px;
-        font-size: 0.78rem;
+        padding: 4px 3px;
+        font-size: 0.6rem;
+      }
+
+      input, button{
+        font-size: vw(42);
       }
     }
 

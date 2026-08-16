@@ -45,6 +45,10 @@ button {
   @media (max-width: 768px) {
     margin-left: 0;
   }
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
 }
 
 .content {
@@ -53,5 +57,9 @@ button {
 
   @media (max-width: 768px) {
     padding: 80px 16px 20px;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
   }
 }

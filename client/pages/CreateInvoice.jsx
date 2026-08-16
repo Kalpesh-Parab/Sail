@@ -23,7 +23,7 @@ const INDIAN_STATES = State.getStatesOfCountry('IN').map((s) => s.name);
 const CreateInvoice = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const editId = searchParams.get('editId'); // Check if editing existing invoice
+  const editId = searchParams.get('editId');
 
   // Master state
   const [inventoryList, setInventoryList] = useState([]);
@@ -60,6 +60,8 @@ const CreateInvoice = () => {
       quantity: 1,
       availableStock: 0,
       sellingPrice: 0,
+      grossPrice: 0,
+      isGstIncluded: false,
       taxRate: 18,
       unit: 'PCS',
     },
@@ -90,7 +92,6 @@ const CreateInvoice = () => {
     setIsContactsModalOpen(true);
   };
 
-  // Load Master Data & Edit Data if editId is provided
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -119,7 +120,6 @@ const CreateInvoice = () => {
           setCompanyProfile(rawProfile.profile || rawProfile || null);
         }
 
-        // Hydrate Form State if in Edit Mode
         if (editId && results[2]?.status === 'fulfilled') {
           const invData = results[2].value.data.invoice;
           if (invData) {
@@ -130,16 +130,21 @@ const CreateInvoice = () => {
             setPaymentTerms(invData.paymentTerms || 30);
             setAmountReceived(invData.amountReceived || 0);
 
-            // Map item lines with updated inventory availableStock
             const mappedItems = invData.items.map((it) => {
               const matchedInv = currentInvList.find(
                 (inv) => inv._id === it.inventoryId,
               );
-              // Max allowed = Current Stock + Quantity already allocated to this invoice
               const currentStock = matchedInv ? matchedInv.quantity : 0;
+              const taxRate = it.taxRate || 18;
+              const basePrice = it.sellingPrice || 0;
+              const grossPrice =
+                Math.round(basePrice * (1 + taxRate / 100) * 100) / 100;
+
               return {
                 ...it,
                 availableStock: currentStock + it.quantity,
+                grossPrice,
+                isGstIncluded: false,
               };
             });
             setItems(mappedItems);
@@ -177,6 +182,11 @@ const CreateInvoice = () => {
     const selectedInv = inventoryList.find((inv) => inv._id === inventoryId);
     if (!selectedInv) return;
 
+    const basePrice =
+      selectedInv.sellingPrice ?? selectedInv.purchasePrice ?? 0;
+    const taxRate = selectedInv.taxRate || 18;
+    const grossPrice = Math.round(basePrice * (1 + taxRate / 100) * 100) / 100;
+
     const updatedItems = [...items];
     updatedItems[index] = {
       ...updatedItems[index],
@@ -184,9 +194,11 @@ const CreateInvoice = () => {
       productName: selectedInv.productName || selectedInv.name,
       hsn: selectedInv.hsn || '',
       availableStock: selectedInv.quantity,
-      sellingPrice: selectedInv.sellingPrice ?? selectedInv.purchasePrice ?? 0,
+      sellingPrice: basePrice,
+      grossPrice: grossPrice,
+      isGstIncluded: false,
       quantity: 1,
-      taxRate: selectedInv.taxRate || 18,
+      taxRate: taxRate,
       unit: selectedInv.unit || 'PCS',
     };
     setItems(updatedItems);
@@ -194,25 +206,35 @@ const CreateInvoice = () => {
 
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...items];
-    let val = value;
+    const item = { ...updatedItems[index] };
+    const taxRate = Number(item.taxRate || 18);
 
     if (field === 'quantity') {
-      const parsedVal = Number(value);
-      const stockLimit = updatedItems[index].availableStock;
-
-      if (parsedVal > stockLimit) {
-        alert(`Requested quantity exceeds available stock (${stockLimit}).`);
-        val = stockLimit;
-      } else if (parsedVal < 1) {
-        val = 1;
+      item.quantity = Number(value);
+    } else if (field === 'isGstIncluded') {
+      item.isGstIncluded = Boolean(value);
+      if (item.isGstIncluded) {
+        item.grossPrice =
+          Math.round(item.sellingPrice * (1 + taxRate / 100) * 100) / 100;
       } else {
-        val = parsedVal;
+        item.sellingPrice =
+          Math.round((item.grossPrice / (1 + taxRate / 100)) * 10000) / 10000;
       }
-    } else if (field === 'sellingPrice') {
-      val = Math.max(0, Number(value));
+    } else if (field === 'priceInput') {
+      const rawVal = Math.max(0, Number(value) || 0);
+      if (item.isGstIncluded) {
+        item.grossPrice = rawVal;
+        item.sellingPrice =
+          Math.round((rawVal / (1 + taxRate / 100)) * 10000) / 10000;
+      } else {
+        item.sellingPrice = rawVal;
+        item.grossPrice = Math.round(rawVal * (1 + taxRate / 100) * 100) / 100;
+      }
+    } else {
+      item[field] = value;
     }
 
-    updatedItems[index][field] = val;
+    updatedItems[index] = item;
     setItems(updatedItems);
   };
 
@@ -226,6 +248,8 @@ const CreateInvoice = () => {
         quantity: 1,
         availableStock: 0,
         sellingPrice: 0,
+        grossPrice: 0,
+        isGstIncluded: false,
         taxRate: 18,
         unit: 'PCS',
       },
@@ -326,10 +350,8 @@ const CreateInvoice = () => {
     try {
       let res;
       if (editId) {
-        // Edit Mode: PUT Request
         res = await axios.put(`/api/invoices/${editId}`, payload);
       } else {
-        // Create Mode: POST Request
         res = await axios.post('/api/invoices', payload);
       }
 
@@ -350,7 +372,6 @@ const CreateInvoice = () => {
     return <div className='loader-screen'>Loading System Data...</div>;
   }
 
-  // Success / Created View Render Block
   if (createdInvoice) {
     return (
       <div className='created-view-wrapper'>
@@ -369,7 +390,6 @@ const CreateInvoice = () => {
             {editId ? 'Back to Invoice History' : 'Create Another Invoice'}
           </button>
 
-          {/* 🟢 WHATSAPP PDF BUTTON */}
           <button
             className='btn-whatsapp'
             style={{
@@ -379,7 +399,7 @@ const CreateInvoice = () => {
               padding: '8px 16px',
               borderRadius: '6px',
               display: 'flex',
-              alignItems: 'center', // Fixed from align-items
+              alignItems: 'center',
               gap: '6px',
               cursor: 'pointer',
               fontWeight: '600',
@@ -430,6 +450,7 @@ const CreateInvoice = () => {
         />
       </div>
 
+      {/* Reusable Item Grid Component */}
       <ItemsGridSection
         items={items}
         inventoryList={inventoryList}
