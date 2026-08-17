@@ -4,6 +4,7 @@ import axios from 'axios';
 import * as pdfjsLib from 'pdfjs-dist';
 import 'pdfjs-dist/build/pdf.worker.mjs';
 import { MdAdd, MdDelete, MdUploadFile } from 'react-icons/md';
+import { getSimilarityScore } from '../utils/similarity';
 import './Purchases.scss';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -30,25 +31,84 @@ const Purchases = () => {
   });
 
   useEffect(() => {
-    fetchPurchases();
-    fetchInventory();
+    initData();
   }, []);
+
+  const initData = async () => {
+    try {
+      const [invRes, purRes] = await Promise.all([
+        axios.get('/api/inventory'),
+        axios.get('/api/purchases'),
+      ]);
+
+      const inventory = Array.isArray(invRes.data)
+        ? invRes.data
+        : invRes.data.inventory || [];
+      setInventoryList(inventory);
+
+      if (purRes.data.success) {
+        // Map purchases & auto-select top matching inventory item if similarity >= 0.75
+        const mappedPurchases = purRes.data.purchases.map((p) => ({
+          id: p._id,
+          vendor: p.vendor,
+          invoiceNumber: p.invoiceNumber,
+          invoiceDate: p.invoiceDate,
+          totalAmount: p.totalAmount,
+          isConfirmed: p.isConfirmed,
+          confirmedAt: p.confirmedAt,
+          products: (p.products || []).map((prod) => {
+            if (prod.selectedInventoryId || p.isConfirmed) return prod;
+
+            let bestId = '';
+            let highestScore = 0;
+            inventory.forEach((inv) => {
+              const score = getSimilarityScore(
+                prod.productName,
+                inv.productName,
+              );
+              if (score >= 0.75 && score > highestScore) {
+                highestScore = score;
+                bestId = inv._id;
+              }
+            });
+
+            return {
+              ...prod,
+              selectedInventoryId: bestId || '',
+            };
+          }),
+        }));
+        setInvoices(mappedPurchases);
+      }
+    } catch (err) {
+      console.error('Error initializing purchases/inventory:', err);
+    }
+  };
 
   const fetchPurchases = async () => {
     try {
       const res = await axios.get('/api/purchases');
       if (res.data.success) {
-        setInvoices(
-          res.data.purchases.map((p) => ({
-            id: p._id,
-            vendor: p.vendor,
-            invoiceNumber: p.invoiceNumber,
-            invoiceDate: p.invoiceDate,
-            totalAmount: p.totalAmount,
-            products: p.products || [],
-            isConfirmed: p.isConfirmed,
-            confirmedAt: p.confirmedAt,
-          })),
+        setInvoices((prev) =>
+          res.data.purchases.map((p) => {
+            const existing = prev.find((old) => old.id === p._id);
+            return {
+              id: p._id,
+              vendor: p.vendor,
+              invoiceNumber: p.invoiceNumber,
+              invoiceDate: p.invoiceDate,
+              totalAmount: p.totalAmount,
+              products: (p.products || []).map((prod, idx) => ({
+                ...prod,
+                selectedInventoryId:
+                  existing?.products?.[idx]?.selectedInventoryId ||
+                  prod.selectedInventoryId ||
+                  '',
+              })),
+              isConfirmed: p.isConfirmed,
+              confirmedAt: p.confirmedAt,
+            };
+          }),
         );
       }
     } catch (err) {
@@ -93,6 +153,16 @@ const Purchases = () => {
         return { ...inv, products: updatedProducts };
       }),
     );
+  };
+
+  // Helper to generate ranked match suggestions per product
+  const getRankedInventory = (productName) => {
+    return inventoryList
+      .map((item) => ({
+        ...item,
+        score: getSimilarityScore(productName, item.productName),
+      }))
+      .sort((a, b) => b.score - a.score);
   };
 
   // PDF Extract Helper
@@ -140,7 +210,7 @@ const Purchases = () => {
       }
 
       const formData = new FormData();
-      formData.append('invoice', file); // Field name must match upload.single('invoice')
+      formData.append('invoice', file);
 
       try {
         const res = await axios.post('/api/purchases/upload', formData, {
@@ -150,7 +220,7 @@ const Purchases = () => {
         });
         if (res.data.success) {
           alert('Invoice parsed successfully via Gemini!');
-          fetchPurchases();
+          initData();
         }
       } catch (err) {
         alert(
@@ -179,7 +249,7 @@ const Purchases = () => {
 
       if (res.data.success) {
         alert(`Invoice ${inv.invoiceNumber} confirmed & inventory updated!`);
-        fetchPurchases();
+        initData();
       }
     } catch (err) {
       alert(err.response?.data?.error || 'Failed to confirm purchase');
@@ -200,7 +270,7 @@ const Purchases = () => {
       const res = await axios.delete(`/api/purchases/${id}`);
       if (res.data.success) {
         alert('Purchase deleted successfully.');
-        fetchPurchases();
+        initData();
       }
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to delete purchase.');
@@ -250,7 +320,7 @@ const Purchases = () => {
       if (res.data.success) {
         alert('Manual Purchase created successfully!');
         setIsManualModalOpen(false);
-        fetchPurchases();
+        initData();
       }
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to create purchase.');
@@ -353,102 +423,132 @@ const Purchases = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {inv.products.map((prod, pIdx) => (
-                        <tr key={pIdx}>
-                          <td>
-                            {inv.isConfirmed ? (
-                              prod.productName
-                            ) : (
+                      {inv.products.map((prod, pIdx) => {
+                        const rankedItems = getRankedInventory(
+                          prod.productName,
+                        );
+                        const topMatches = rankedItems.filter(
+                          (i) => i.score >= 0.4,
+                        );
+                        const otherItems = rankedItems.filter(
+                          (i) => i.score < 0.4,
+                        );
+
+                        return (
+                          <tr key={pIdx}>
+                            <td>
+                              {inv.isConfirmed ? (
+                                prod.productName
+                              ) : (
+                                <input
+                                  type='text'
+                                  className='fullWidthInput'
+                                  value={prod.productName}
+                                  onChange={(e) =>
+                                    handleProductChange(
+                                      inv.id,
+                                      pIdx,
+                                      'productName',
+                                      e.target.value,
+                                    )
+                                  }
+                                />
+                              )}
+                            </td>
+                            <td>
+                              {!inv.isConfirmed ? (
+                                <select
+                                  className='fullWidthInput'
+                                  value={prod.selectedInventoryId || ''}
+                                  onChange={(e) =>
+                                    handleProductChange(
+                                      inv.id,
+                                      pIdx,
+                                      'selectedInventoryId',
+                                      e.target.value,
+                                    )
+                                  }
+                                >
+                                  <option value=''>
+                                    ➕ Create as New Product
+                                  </option>
+
+                                  {topMatches.length > 0 && (
+                                    <optgroup label='Suggested Matches'>
+                                      {topMatches.map((i) => (
+                                        <option key={i._id} value={i._id}>
+                                          ✨ {i.productName} (
+                                          {Math.round(i.score * 100)}% match)
+                                        </option>
+                                      ))}
+                                    </optgroup>
+                                  )}
+
+                                  {otherItems.length > 0 && (
+                                    <optgroup label='All Other Products'>
+                                      {otherItems.map((i) => (
+                                        <option key={i._id} value={i._id}>
+                                          {i.productName}
+                                        </option>
+                                      ))}
+                                    </optgroup>
+                                  )}
+                                </select>
+                              ) : (
+                                <span>Mapped</span>
+                              )}
+                            </td>
+                            <td>
                               <input
                                 type='text'
-                                className='fullWidthInput'
-                                value={prod.productName}
+                                disabled={inv.isConfirmed}
+                                value={prod.hsn || ''}
                                 onChange={(e) =>
                                   handleProductChange(
                                     inv.id,
                                     pIdx,
-                                    'productName',
+                                    'hsn',
                                     e.target.value,
                                   )
                                 }
                               />
-                            )}
-                          </td>
-                          <td>
-                            {!inv.isConfirmed ? (
-                              <select
-                                className='fullWidthInput'
-                                value={prod.selectedInventoryId || ''}
+                            </td>
+                            <td>
+                              <input
+                                type='number'
+                                className='qtyInput'
+                                disabled={inv.isConfirmed}
+                                value={prod.quantity}
                                 onChange={(e) =>
                                   handleProductChange(
                                     inv.id,
                                     pIdx,
-                                    'selectedInventoryId',
+                                    'quantity',
                                     e.target.value,
                                   )
                                 }
-                              >
-                                <option value=''>Create as New Product</option>
-                                {inventoryList.map((i) => (
-                                  <option key={i._id} value={i._id}>
-                                    {i.productName}
-                                  </option>
-                                ))}
-                              </select>
-                            ) : (
-                              <span>Mapped</span>
-                            )}
-                          </td>
-                          <td>
-                            <input
-                              type='text'
-                              disabled={inv.isConfirmed}
-                              value={prod.hsn || ''}
-                              onChange={(e) =>
-                                handleProductChange(
-                                  inv.id,
-                                  pIdx,
-                                  'hsn',
-                                  e.target.value,
-                                )
-                              }
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type='number'
-                              className='qtyInput'
-                              disabled={inv.isConfirmed}
-                              value={prod.quantity}
-                              onChange={(e) =>
-                                handleProductChange(
-                                  inv.id,
-                                  pIdx,
-                                  'quantity',
-                                  e.target.value,
-                                )
-                              }
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type='number'
-                              className='priceInput'
-                              disabled={inv.isConfirmed}
-                              value={prod.purchasePrice}
-                              onChange={(e) =>
-                                handleProductChange(
-                                  inv.id,
-                                  pIdx,
-                                  'purchasePrice',
-                                  e.target.value,
-                                )
-                              }
-                            />
-                          </td>
-                          <td>₹{prod.amount}</td>
-                        </tr>
-                      ))}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type='number'
+                                className='priceInput'
+                                disabled={inv.isConfirmed}
+                                value={prod.purchasePrice}
+                                onChange={(e) =>
+                                  handleProductChange(
+                                    inv.id,
+                                    pIdx,
+                                    'purchasePrice',
+                                    e.target.value,
+                                  )
+                                }
+                              />
+                            </td>
+                            <td>₹{prod.amount}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
 

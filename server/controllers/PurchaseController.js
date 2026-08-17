@@ -136,6 +136,20 @@ export const parseInvoice = async (req, res) => {
 
     const ai = new GoogleGenAI({ apiKey });
 
+   const promptText = `
+You are an expert GST Invoice Parser.
+Extract all required invoice fields strictly following the schema.
+
+Important Rules for Prices:
+1. "purchasePrice" MUST ALWAYS BE THE TAX-INCLUSIVE UNIT PRICE:
+   - If a column like "Rate (Incl. of Tax)", "Gross Rate", or "MRP" is present, extract that exact value.
+   - If only an untaxed "Rate" or "Taxable Value" is present, calculate: purchasePrice = (Taxable Rate) * (1 + (CGST% + SGST%)/100).
+2. "amount" MUST ALWAYS BE THE TOTAL TAX-INCLUSIVE AMOUNT for that line item (quantity * purchasePrice).
+3. Ignore company bank details, terms, declarations, and authorized signatory.
+4. Product quantity, purchasePrice, amount, and invoice total must be Numbers rounded to 2 decimal places.
+5. Format dates as ISO strings (YYYY-MM-DD) or standard dates.
+`;
+
     const aiRes = await ai.models.generateContent({
       model: 'gemini-3.5-flash',
       contents: [
@@ -145,7 +159,7 @@ export const parseInvoice = async (req, res) => {
             data: req.file.buffer.toString('base64'),
           },
         },
-        'Extract all fields from this invoice according to the JSON schema provided.',
+        promptText,
       ],
       config: {
         responseMimeType: 'application/json',
