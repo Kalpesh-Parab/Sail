@@ -18,6 +18,7 @@ import '../styles/global.scss';
 
 // Move API base configuration outside component render
 axios.defaults.baseURL = 'https://sail-3a7j.onrender.com';
+// axios.defaults.baseURL = 'http://localhost:5000'; // For local development
 
 function App() {
   const [user, setUser] = useState(null);
