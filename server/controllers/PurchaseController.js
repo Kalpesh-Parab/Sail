@@ -151,7 +151,7 @@ Important Rules for Prices:
 `;
 
     const aiRes = await ai.models.generateContent({
-      model: 'gemini-3.5-flash',
+      model: 'gemini-3.0-flash',
       contents: [
         {
           inlineData: {
